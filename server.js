@@ -32,6 +32,7 @@ function store(response, db, resid, request) {
 	request.on('end', function() {
 		body = JSON.parse(qs.parse(body)['data']);
 		db.collection('cache', function(err, collection) {
+			collection.remove({resid:resid});
 			body['resid'] = resid;
 			body['insertedon'] = new mongo.Timestamp();
 			collection.insert(body); 
