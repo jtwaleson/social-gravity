@@ -15,8 +15,21 @@ function find(response, db, resid) {
 		console.log('looking in database collection cache for resid: '+resid);
 		collection.findOne({resid: resid}, function(err, result) {
 			if (result != null) {
-				response.writeHead(200, {'Cache-Control': 'max-age=432000', 'Content-Type': 'application/json; charset=utf-8'});
-				response.end(JSON.stringify(result));
+				if (resid.substr(0,2) == 'f_') {
+					collection.findOne({resid:'u_'+resid.substr(2)}, function(err, subresult) {
+						if (subresult != null) {
+							response.writeHead(200, {'Cache-Control': 'max-age=432000', 'Content-Type': 'application/json; charset=utf-8'});
+							result['extras'] = subresult;
+							response.end(JSON.stringify(result));
+						} else {
+							response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+							response.end(JSON.stringify(result));
+						}
+					});
+				} else {
+					response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+					response.end(JSON.stringify(result));
+				}
 			} else {
 				response.writeHead(404);
 				response.end('notfound');
