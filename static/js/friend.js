@@ -4,15 +4,13 @@ function Friend(i) {
 	this.x = rand(0, viewPort.getWidth());
 	this.y = rand(40, viewPort.getHeight());
 	this.n = 0;
-	this.hasinfo = false;
-	this.friendsRetrieved = false;
-	this.followersRetrieved = false;
 	this.drawlines = false;
 	this.visible = true;
 	this.locked = false;
 	this.draw();
-	this.friends = {};
-	this.setInfo(sessionStorage.getItem('u_'+i), true);
+	this.friends = null;
+	this.info = null;
+	this.followers = null;
 	this.strongestConnections = {};
 }
 Friend.prototype.slimDown = function(data) {
