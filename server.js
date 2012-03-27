@@ -7,64 +7,60 @@ var qs = require('querystring');
 var host = process.env['MONGO_NODE_DRIVER_HOST'] != null ? process.env['MONGO_NODE_DRIVER_HOST'] : 'localhost';
 var port = process.env['MONGO_NODE_DRIVER_PORT'] != null ? process.env['MONGO_NODE_DRIVER_PORT'] : Connection.DEFAULT_PORT;
 
-console.log("Connecting to " + host + ":" + port);
 var db = new Db('socialgraph', new Server(host, port, {}));
 
-function find(response, db, resid) {
-	db.collection('cache', function(err, collection) {
-		console.log('looking in database collection cache for resid: '+resid);
-		collection.findOne({resid: resid}, function(err, result) {
+// There are two types of entries: users (profile+friendlist) and followerlists
+
+
+function find(response, db, type, id) {
+	var searchquery = {id: id}
+	if (type == 'userbyname') {
+		type = 'user';
+		searchquery = {lower_screen_name: id.toLowerCase()};
+	}
+	db.collection(type, function(err, collection) {
+		collection.findOne(searchquery, function(err, result) {
 			if (result != null) {
-				if (resid.substr(0,2) == 'f_') {
-					collection.findOne({resid:'u_'+resid.substr(2)}, function(err, subresult) {
-						if (subresult != null) {
-							response.writeHead(200, {'Cache-Control': 'max-age=432000', 'Content-Type': 'application/json; charset=utf-8'});
-							result['extras'] = subresult;
-							response.end(JSON.stringify(result));
-						} else {
-							response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-							response.end(JSON.stringify(result));
-						}
-					});
-				} else {
-					response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-					response.end(JSON.stringify(result));
-				}
+				response.writeHead(200, {'Cache-Control': 'max-age=432000', 'Content-Type': 'application/json; charset=utf-8'});
+				response.end(JSON.stringify([result]));
 			} else {
 				response.writeHead(404);
-				response.end('notfound');
+				response.end('not found');
 			}
 		});
 	});
 }
-function store(response, db, resid, request) {
-	var body = '';
-	request.on('data', function(data) {
-		body += data;
-	});
-	request.on('end', function() {
-		body = JSON.parse(qs.parse(body)['data']);
-		db.collection('cache', function(err, collection) {
-			collection.remove({resid:resid});
-			body['resid'] = resid;
-			body['insertedon'] = new mongo.Timestamp();
-			collection.insert(body); 
-			response.writeHead(200);
-			response.end('ok');
-		});
-	});
+function store(response, db, type, id, request) {
+        var body = '';
+        request.on('data', function(data) {
+                body += data;
+        });
+        request.on('end', function() {
+                body = JSON.parse(qs.parse(body)['data']);
+                db.collection(type, function(err, collection) {
+                        collection.remove({id:id});
+                        body['id'] = id;
+			if ('screen_name' in body)
+				body['lower_screen_name'] = body['screen_name'].toLowerCase();
+                        collection.insert(body); 
+                        response.writeHead(200);
+                        response.end('ok');
+                });
+        });
 }
 
 db.open(function(err,db){
-	http.createServer(function(request, res) {
+	http.createServer(function(request, response) {
 		var path = url.parse(request.url).path.split('/');
-		if (path.length == 3) {
-			var resid = path[2];
+		if (path.length == 4) {
+			var type = path[2];
+			var id = path[3];
+			
 			if (request.method == 'GET') {
-				find(res, db, resid);
+				find(response, db, type, id);
 				return;
 			} else if (request.method == 'POST') {
-				store(res, db, resid, request);
+				store(response, db, type, id, request);
 				return;
 			}
 		}
