@@ -5,8 +5,16 @@
 		<script type='text/javascript' src='js/downloader.js'></script>
 		<script type='text/javascript'>
 			var users = {};
+			var userProfiles = {};
+			jQuery.ajaxPrefilter(function( options ) {
+				options.global = true;
+			});
 			$(function() {
+				$('body').ajaxStart(function(){
+					console.log('starting!');
+				});
 				$('body').ajaxStop(function(){
+					console.log('jeuj!');
 					downloader.go();
 				});
 				var downloader = new Downloader();
@@ -18,6 +26,7 @@
 						function(profile){
 							ids = profile['friends']['ids'];
 							users = {};
+							userProfiles = {};
 							for (i in ids) {
 								$("<li>").attr('id', 'friend_'+ids[i]).appendTo("#friends").text(ids[i]);
 								users[ids[i]] = 0;
