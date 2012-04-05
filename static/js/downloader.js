@@ -1,5 +1,7 @@
 function Downloader() {
 	var self = this;
+	self.twitterTried = 0;
+	self.pipesTried = 0;
 
 	self.byUserName = function(username, success) {
 		self.resolve(
@@ -27,23 +29,148 @@ function Downloader() {
 		);
 	}
 	self.go = function() {
-		k = 0;
-		for (id in users) {
-			if (users[id] == 0) {
-				k++;
+		var stage10 = self.findUsersInState(10);
+		for (i in stage10) {
+			var id = stage10[i];
+			$("#friend_"+id).css('background-color', 'green')
+			if (userProfiles[id]['protected'] === true || userProfiles[id]['protected'] == 'true')
+				$("#friend_"+id).css('background-color', 'black').text(userProfiles[id]['screen_name']);
+			else {
+				console.log(userProfiles[id]['friends']);
+				$("#friend_"+id).css('background-color', 'green').text(userProfiles[id]['screen_name'] + ' COUNT::' + userProfiles[id]['friends'].length);
+			}
+				
+			users[id] = 11;
+		}
+
+		var stage0 = self.findUsersInState(0, 10);
+		if (stage0.length > 0) {
+			for (i in stage0) {
 				var f = function() {
-					var i = id;
-					self.cache('/cache/user/'+i, function(data){$("#friend_"+i).css('background-color', 'red').text(data[0]['screen_name']); users[i] = 3;}, function(){console.log(i+' not found'); users[i] = 1;});
+					var id = stage0[i];
+					self.cache('/cache/user/'+id, 
+						function(data){
+							userProfiles[id] = data[0];
+							users[id] = 10;
+						}, 
+						function(){
+							users[id] = 1;
+						});
 				}()
 			}
-			if (k >= 10)
-				return;
+			return;
 		}
-		for (id in users) {
-			if (users[id] == 1) {
 
-			}
+		if (self.twitterFailed) {
+			self.pushAllFromState(1, 2);
+			self.pushAllFromState(5, 6);
 		}
+		if (self.pipesFailed) {
+			self.pushAllFromState(2, 4);
+			self.pushAllFromState(6, 4);
+		}
+		var stage3 = self.findUsersInState(3);
+		// no return after this one 
+		for (i in stage3) {
+			var prot = userProfiles[stage3[i]]['protected'];
+			console.log(prot);
+			if (prot === false || prot == 'false') {
+				console.log('extrafalse');
+				users[stage3[i]] = 5;
+			} else
+				users[stage3[i]] = 7;
+		}
+		var stage7 = self.findUsersInState(7, 10);
+		if (stage7.length > 0) {
+			for (i in stage7) {
+				var f = function() {
+					var id = stage7[i];
+					$.post( '/cache/user/'+id, 
+						{data: JSON.stringify(userProfiles[id])},
+						function(){users[id] = 10;}
+					);
+				}()
+			}
+			return;
+		}
+		var stage5 = self.findUsersInState(5, 10);
+		if (stage5.length > 0) {
+			for (i in stage5) {
+				var f = function() {
+					var id = stage5[i];
+					self.twitter(
+						'http://api.twitter.com/1/friends/ids.json?cursor=-1&user_id='+id,
+						function(data) {
+							userProfiles[id]['friends'] = data;
+							users[id] = 7;
+						},
+						function() {
+							self.twitterFailed = true;
+						}
+					);
+				}();
+			}
+			return;
+		}
+
+		var stage6 = self.findUsersInState(6, 10);
+		if (stage6.length > 0) {
+			for (i in stage6) {
+				var f = function() {
+					var id = stage6[i];
+					self.pipes(
+						'http://api.twitter.com/1/friends/ids.json?cursor=-1&user_id='+id,
+						function(data) {
+							userProfiles[id]['friends'] = data[0];
+							users[id] = 7;
+						},
+						function() {
+							self.pipesFailed = true;
+						}
+					);
+				}();
+			}
+			return;
+		}
+
+
+
+		var stage1 = self.findUsersInState(1, 100);
+		if (stage1.length > 0) {
+			self.twitter(
+				'http://api.twitter.com/1/users/lookup.json?user_id='+stage1.join(),
+				function(data) {
+					for (i in data) {
+						userProfiles[data[i]['id']] = data[i];
+						users[data[i]['id']] = 3;
+					}
+				},
+				function() {
+					self.twitterFailed = true;
+				});
+			return;
+		}
+		var stage2 = self.findUsersInState(2, 100);
+		if (stage2.length > 0) {
+			self.pipes(
+				'http://api.twitter.com/1/users/lookup.json?user_id='+stage2.join(),
+				function(data) {
+					if (data.length == 1 && 'json' in data[0] && !('default_profile' in data[0]))
+						data = data[0]['json'];
+					for (i in data) {
+						userProfiles[data[i]['id']] = data[i];
+						users[data[i]['id']] = 3;
+					}
+				},
+				function() {
+					self.pipesFailed = true;
+				});
+			return;
+		}
+
+
+		
+
 	}
 
 	//INTERNALS
@@ -85,7 +212,7 @@ function Downloader() {
                         success: function(r,a,xhr) {
                                 success(r);
                         },
-                        timeout: 10000,
+                        timeout: 5000,
                 });
 	}
 	self.pipes = function(twitterUrl, success, error) {
@@ -104,7 +231,7 @@ function Downloader() {
                                 } else
                                         error();
                         },
-                        timeout: 10000,
+                        timeout: 5000,
                         error: error,
                 });
 	}
@@ -134,5 +261,17 @@ function Downloader() {
 			},
 			error
 		)	
+	}
+	self.findUsersInState = function(state, maxnum) {
+		var r = [];
+		for (i in users)
+			if (r.length != maxnum && users[i] == state)
+				r.push(i);
+		return r;
+	}
+	self.pushAllFromState = function(state, newstate) {
+		for (i in users)
+			if (users[i] == state)
+				users[i] = newstate;
 	}
 }
