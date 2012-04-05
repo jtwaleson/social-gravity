@@ -3,11 +3,10 @@ function Protagonists(downloader) {
 	self.downloader = downloader;
 	self.list = [];
 	self.add = function(name) {
-		downloader.readyCallback = function(){};
 		if (name.length > 0) {
 			self.list.push({name: name, followers: -1, friends: -1, includeself: true, includefollowers: false, includefriends: true});
 			self.generate();
-			downloader.justGet('n_'+name, self.setInfo, function(){alert('Could not find user')});
+			downloader.byUserName(name, function(data){var n = name; self.setInfo(n, data);}, function(){alert('Could not find user')});
 		}
 	}
 	self.error = function() {
@@ -97,10 +96,10 @@ function Protagonists(downloader) {
 		}
 		a.show();
 	}
-	self.setInfo = function(data) {
+	self.setInfo = function(name, data) {
 		var user = data['result'];
 		for (var i in self.list) {
-			if (self.list[i]['name'].toLowerCase() == user['screen_name'].toLowerCase()) {
+			if (self.list[i]['name'].name) {
 				if (user['protected'] == true || user['protected'] == "true") {
 					alert('Sorry, this account is protected');
 					self.rm(i);
@@ -108,8 +107,6 @@ function Protagonists(downloader) {
 				}
 				self.list[i]['name'] = user['screen_name'];
 				self.list[i]['id'] = user['id'];
-				self.downloader.justGet('f_'+user['id'], self.setFriends, self.error);
-				self.downloader.justGet('g_'+user['id'], self.setFollowers, self.error);
 				break;
 			}
 		}

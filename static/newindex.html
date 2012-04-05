@@ -10,11 +10,7 @@
 				options.global = true;
 			});
 			$(function() {
-				$('body').ajaxStart(function(){
-					console.log('starting!');
-				});
 				$('body').ajaxStop(function(){
-					console.log('jeuj!');
 					downloader.go();
 				});
 				var downloader = new Downloader();

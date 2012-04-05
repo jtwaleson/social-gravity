@@ -13,13 +13,6 @@ function Friend(i) {
 	this.followers = null;
 	this.strongestConnections = {};
 }
-Friend.prototype.slimDown = function(data) {
-	var f = ['id', 'protected', 'screen_name', 'description'];
-	var info = {};
-	for (var i in f)
-		info[f[i]] = data[f[i]];
-	return info;
-}
 Friend.prototype.draw = function() {
 	this.div = $("<div>")
 		.attr('id',this.id)

@@ -33,11 +33,10 @@ function Downloader() {
 		for (i in stage10) {
 			var id = stage10[i];
 			$("#friend_"+id).css('background-color', 'green')
-			if (userProfiles[id]['protected'] === true || userProfiles[id]['protected'] == 'true')
+			if (!('friends' in userProfiles[id] && 'ids' in userProfiles[id]['friends'])) {
 				$("#friend_"+id).css('background-color', 'black').text(userProfiles[id]['screen_name']);
-			else {
-				console.log(userProfiles[id]['friends']);
-				$("#friend_"+id).css('background-color', 'green').text(userProfiles[id]['screen_name'] + ' COUNT::' + userProfiles[id]['friends'].length);
+			} else {
+				$("#friend_"+id).css('background-color', 'green').text(userProfiles[id]['screen_name'] + ' COUNT::' + userProfiles[id]['friends']['ids'].length);
 			}
 				
 			users[id] = 11;
