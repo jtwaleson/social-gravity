@@ -11,111 +11,12 @@ function FriendManager(viewPort, simulation, downloader) {
 	self.simulation.friendmanager = self;
 
 	self.add = function(id) {
+		self.downloader.users[id] = 0;
 		self.persons[id] = new Friend(id);
 		self.amount++;
 		$(".tweepcount").text(self.amount);
 	}
-	self.getProfiles = function() {
-		var ids = [];
-		for (var i in self.persons)
-			if (!self.persons[i].hasinfo)
-				ids.push(i);
-		var resid = 'l_'+ids.join(',');
-		self.downloader.justGet(resid, self.parseProfiles, self.error);
-	}
 	self.error = function() {
-	}
-	self.parseProfiles = function(data) {
-		for (var i in data['result']) {
-			var u = data['result'][i];
-			self.persons[u.id].setInfo(u);
-			self.amountParsed++;
-		}
-		$(".tweepProfilesParsed").text(self.amountParsed);
-		$(".privateaccounts").text(self.amountProtected);
-	}
-	self.startDownloading = function() {
-		self.phase++;
-		var ids = [];
-		$(".loading_small").hide();
-		for (var i in self.persons) {
-			if (!self.persons[i].prot && !self.persons[i].friendsRetrieved)
-				ids.push(i);
-		}
-		if (ids.length == 0 || self.phase >= 4) {
-			$("#configurebtn").removeClass('disabled');
-			if (ids.length > 0)
-				$("#pleasecomeback").show();
-			$("#progress").hide();
-			return;
-		}
-		$("#downloads"+self.phase+" .loading_small").show();
-		
-		for (i in ids) {
-			
-		}
-		self.downloader.readyCallback = self.startDownloading;
-		var max = ids.length;
-		if (self.phase == 2)
-			max = 450;
-		if (self.phase == 3)
-			max = 150;
-		if (self.phase == 1) {
-			var subids = []
-			for (i in ids) {
-				subids.push(ids[i]);
-				if ((i % 50 == 0 || i == ids.length -1) && subids.length > 0) {
-					self.downloader.justGet('q_'+subids.join(','), self.setPersonMultipleFriends, self.setPersonFriendsError, {nolocal: 1, notwitter:1,nopipes:1,noproxy:1});
-					for (j in subids)
-						self.incField('.requested', 1);
-					subids = [];
-				}
-			}
-		} else {
-			for (var i in ids) {
-				if (max-- > 0) {
-					var id = ids[i];
-					self.downloader.justGet('f_'+id, self.setPersonFriends, self.setPersonFriendsError, 
-							{nolocal: (self.phase != 0), 
-							nocache: (self.phase != 1), 
-							notwitter: (self.phase != 3), 
-							nopipes: (self.phase != 2), 
-							noproxy: (self.phase != 4)});
-					self.incField(".requested");
-				}
-			}
-		}
-	}
-	self.setPersonFriendsError = function() {
-		self.incField('.error');
-	}
-	self.incField = function(f, p, n) {
-		if (typeof p == 'undefined')
-			p = self.phase;
-		var a = $("#downloads"+p+" "+f);
-		if (typeof n == 'undefined') {
-			var n = 0;
-			if (a.text().length > 0)
-				n = parseInt(a.text());
-			n++;
-		}
-		a.text(n);
-	}
-	self.setPersonMultipleFriends = function(data) {
-		var n = data['requestcount'];
-		for (i in data['result']) {
-			n--;
-			self.incField('.retrieved');
-			self.persons[i.substr(2)].setFriends({resid: i, result: data['result'][i]});
-		}
-		while (n > 0) {
-			self.incField('.error',1);
-			n--;
-		}
-	}
-	self.setPersonFriends = function(data) {
-		self.incField(".retrieved");
-		self.persons[data['resid'].substr(2)].setFriends(data);
 	}
 	self.getInnerConnections = function () {
 		self.simulation.setFriends(self.getFriendsExport());
@@ -123,6 +24,8 @@ function FriendManager(viewPort, simulation, downloader) {
 		self.simulation.start();
 	}
 	self.clear = function () {
+		self.downloader.users = {};
+		self.downloader.resetUsage();
 		self.simulation.stop();
 		for (var i in self.persons)
 			self.persons[i].div.remove();
@@ -131,9 +34,6 @@ function FriendManager(viewPort, simulation, downloader) {
 		self.amountParsed = 0;
 		self.amountProtected = 0;
 		self.drawStrongConnections = false;
-		for (var i = 0; i <= 4; i++)
-			for (var j in {'.error': 1, '.retrieved': 1, '.requested': 1, '.total': 1})
-				self.incField(j, i, '0')
 		self.viewPort.reset();
 	}
 	self.getFriendsExport = function() {

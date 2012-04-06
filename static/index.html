@@ -38,8 +38,16 @@ return this.each(function() {
 };
 
 })(jQuery);
+jQuery.ajaxPrefilter(function( options ) {
+	options.global = true;
+});
 
 $(function() {
+
+$('body').ajaxStop(function(){
+	downloader.go();
+});
+
 $("#playfield").html("<canvas width='"+(viewPort.getWidth()*5)+"px' height='"+(viewPort.getHeight()*5)+"px' id='c'/>");
 $("#playfield").mousewheel(function(e, delta) {
 	e.preventDefault();
@@ -105,27 +113,16 @@ $("#downloadbtn").click(function(e) {
 	$("#modal-network-generator").modal('hide');
 	$("#modal-tweep-downloader").modal({keyboard: true, backdrop: 'static', show: true});
 	$("#downloadsphase1").show();
-	$("#downloadsphase2").hide();
 	$("#analysebtn").addClass('disabled');
 	$("#progress").show();
 	$("#pleasecomeback").hide();
 	
 	$(".tweepProfilesParsed").text('0');
-	var profilesincache = 0;
 	friendManager.clear();
 	for (var i in protagonists.getActualFriendsAndFollowers()) {
 		friendManager.add(i);
-		if (friendManager.persons[i].hasinfo)
-			profilesincache++;
 	}
-	$(".tweepProfilesCached").text(profilesincache);
-	
-	downloader.readyCallback = function() {
-		$("#downloadsphase2").fadeIn('slow');
-		friendManager.phase = -1;
-		friendManager.startDownloading();
-	}
-	setTimeout(function(){friendManager.getProfiles();}, 1000);
+	downloader.go();
 });
 $("#protagonists input").live('change', function(e) {
 	protagonists.change($(this).closest('tr').attr('rel'), $(this).attr('rel'));
@@ -351,13 +348,8 @@ body #playfield .friend.immovable{
 				<h3>Tweep downloader</h3>
 			</div>
 			<div class="modal-body">
-				<div id='downloadsphase1'>
-					<p><b>Phase 1:</b> Downloading the profiles</p>
-					<p>Total: <span class='tweepcount'>0</span>, already in cache: <span class='tweepProfilesCached'>0</span>, downloaded: <span class='tweepProfilesParsed'>0</span></p>
-				</div>
-				<div id='downloadsphase2' class='hide'>
-					<p><b>Phase 2:</b> Downloading the connections</p>
-					<p>there are <span class='privateaccounts'>0</span> private accounts</p>
+				<div id='downloadsphase1' class='hide'>
+					<p><b>Downloading</b> profiles and connections</p>
 					<table id='downloads' class='zebra-striped'>
 						<thead>
 							<tr>
@@ -370,16 +362,7 @@ body #playfield .friend.immovable{
 							</tr>
 						</thead>
 						<tbody>
-							<tr class='' id='downloads0'>
-								<td class='name'>local cache</td>
-								<td>n/a</td>
-								<td class='total tweepcount'>0</td>
-								<td class='requested'>0</td>
-								<td class='retrieved'>0</td>
-								<td style="color: red;" class='error'></td>
-								<td><img class='loading_small hide' src='img/loading_small.gif'/></td>
-							</tr>
-							<tr class='' id='downloads1'>
+							<tr class='' id='downloadscache'>
 								<td class='name'>server cache</td>
 								<td>n/a</td>
 								<td class='total'>0</td>
@@ -388,18 +371,18 @@ body #playfield .friend.immovable{
 								<td style="color: red;" class='error'></td>
 								<td><img class='loading_small hide' src='img/loading_small.gif'/></td>
 							</tr>
-							<tr class='' id='downloads2'>
-								<td class='name'>yahoo pipes</td>
-								<td>+/- 200/hour</td>
+							<tr class='' id='downloadstwitter'>
+								<td class='name'>twitter</td>
+								<td>150/hour</td>
 								<td class='total'>0</td>
 								<td class='requested'>0</td>
 								<td class='retrieved'>0</td>
 								<td style="color: red;" class='error'></td>
 								<td><img class='loading_small hide' src='img/loading_small.gif'/></td>
 							</tr>
-							<tr class='' id='downloads3'>
-								<td class='name'>twitter</td>
-								<td>150/hour</td>
+							<tr class='' id='downloadspipes'>
+								<td class='name'>yahoo pipes</td>
+								<td>+/- 200/hour</td>
 								<td class='total'>0</td>
 								<td class='requested'>0</td>
 								<td class='retrieved'>0</td>

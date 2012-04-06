@@ -66,11 +66,11 @@ function Protagonists(downloader) {
 	self.getActualFriendsAndFollowersChild = function(i) {
 		var a = {};
 		if (self.list[i]['includefollowers'] && typeof(self.list[i]['followers']) != 'undefined')
-			for (var j in self.list[i]['followers'])
-				a[self.list[i]['followers'][j]] = 1;
+			for (var j in self.list[i]['followers']['ids'])
+				a[self.list[i]['followers']['ids'][j]] = 1;
 		if (self.list[i]['includefriends'] && typeof(self.list[i]['friends']) != 'undefined')
-			for (var j in self.list[i]['friends'])
-				a[self.list[i]['friends'][j]] = 1;
+			for (var j in self.list[i]['friends']['ids'])
+				a[self.list[i]['friends']['ids'][j]] = 1;
 		return a;
 	}
 	self.clear = function() {
@@ -78,14 +78,15 @@ function Protagonists(downloader) {
 			self.rm(0);
 	}
 	self.getTr = function(p, i) {
+		console.log(p);
 		var a = $("#protagonists .dummyrow").clone();
 		a.removeClass('dummyrow');
 		a.appendTo("#protagonists tbody");
 		a.addClass('real');
 		a.attr('rel', i)
 		a.find('.name').text(p['name']);
-		a.find('.followers input[type=text]').val(typeof(p['followers']) == 'undefined' ? '?' : p['followers'].length);
-		a.find('.friends input[type=text]').val(typeof(p['friends']) == 'undefined' ? '?' : p['friends'].length);
+		a.find('.followers input[type=text]').val(typeof(p['followers']) == 'undefined' || typeof(p['followers']['ids']) == 'undefined' ? '?' : p['followers']['ids'].length);
+		a.find('.friends input[type=text]').val(typeof(p['friends']) == 'undefined' || typeof(p['friends']['ids']) == 'undefined' ? '?' : p['friends']['ids'].length);
 		for (var k in {friends: 1, followers: 1, self: 1}) {
 			if (p['include'+k]) {
 				a.find('.'+k+' label').addClass('active');
@@ -96,37 +97,27 @@ function Protagonists(downloader) {
 		}
 		a.show();
 	}
-	self.setInfo = function(name, data) {
-		var user = data['result'];
+	self.setInfo = function(name, user) {
 		for (var i in self.list) {
-			if (self.list[i]['name'].name) {
+			if (self.list[i]['name'] == name) {
 				if (user['protected'] == true || user['protected'] == "true") {
 					alert('Sorry, this account is protected');
 					self.rm(i);
 					return;
 				}
-				self.list[i]['name'] = user['screen_name'];
-				self.list[i]['id'] = user['id'];
-				break;
-			}
-		}
-		self.generate();
-	}
-	self.setFollowers = function(data) {
-		var id = data['resid'].substr(2);
-		for (var i in self.list) {
-			if (self.list[i]['id'] == id) {
-				self.list[i]['followers'] = data['result']['ids'];
-				break;
-			}
-		}					
-		self.generate();
-	}
-	self.setFriends = function(data) {
-		var id = data['resid'].substr(2);
-		for (var i in self.list) {
-			if (self.list[i]['id'] == id) {
-				self.list[i]['friends'] = data['result']['ids'];
+				for (var j in user)
+					self.list[i][j] = user[j];
+				a = function(list_item, id) {
+					self.downloader.followers(id, 
+						function(followers){
+							self.list[list_item]['followers'] = followers;
+							self.generate();
+						},
+						function() {
+							alert('Could not fetch the followers for this profile');
+						}
+					);
+				}(i, user['id']);
 				break;
 			}
 		}

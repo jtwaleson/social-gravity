@@ -1,7 +1,12 @@
 function Downloader() {
 	var self = this;
-	self.twitterTried = 0;
-	self.pipesTried = 0;
+	self.users = {}
+	self.userProfiles = {}
+	
+	self.resetUsage = function() {
+		self.usage = {'twitter': [0,0,0], 'pipes': [0,0,0], 'cache':[0,0,0]};
+	}
+	self.resetUsage();
 
 	self.byUserName = function(username, success) {
 		self.resolve(
@@ -18,6 +23,19 @@ function Downloader() {
 			}
 		);
 	}
+	self.followers = function(id, success, error) {
+		self.cache('/cache/followers/'+id, success, function(){ 
+			self.resolveWithoutCache(
+				'http://api.twitter.com/1/followers/ids.json?user_id='+id, 
+				function(data) {
+					$.post( '/cache/followers/'+id, 
+						{data: JSON.stringify(data)}
+					);
+					success(data);
+				},
+				error);
+		});
+	}
 	self.byUserId = function(id, success) {
 		self.resolve(
 			'/cache/user/'+id, 
@@ -29,17 +47,22 @@ function Downloader() {
 		);
 	}
 	self.go = function() {
+		for (var type in self.usage) {
+			$("#downloads"+type+" .requested").text(self.usage[type][0]);
+			$("#downloads"+type+" .retrieved").text(self.usage[type][1]);
+			$("#downloads"+type+" .error").text(self.usage[type][2]);
+		}
 		var stage10 = self.findUsersInState(10);
 		for (i in stage10) {
 			var id = stage10[i];
 			$("#friend_"+id).css('background-color', 'green')
-			if (!('friends' in userProfiles[id] && 'ids' in userProfiles[id]['friends'])) {
-				$("#friend_"+id).css('background-color', 'black').text(userProfiles[id]['screen_name']);
+			if (!('friends' in self.userProfiles[id] && 'ids' in self.userProfiles[id]['friends'])) {
+				$("#friend_"+id).css('background-color', 'black').text(self.userProfiles[id]['screen_name']);
 			} else {
-				$("#friend_"+id).css('background-color', 'green').text(userProfiles[id]['screen_name'] + ' COUNT::' + userProfiles[id]['friends']['ids'].length);
+				$("#friend_"+id).css('background-color', 'green').text(self.userProfiles[id]['screen_name'] + ' COUNT::' + self.userProfiles[id]['friends']['ids'].length);
 			}
 				
-			users[id] = 11;
+			self.users[id] = 11;
 		}
 
 		var stage0 = self.findUsersInState(0, 10);
@@ -49,11 +72,11 @@ function Downloader() {
 					var id = stage0[i];
 					self.cache('/cache/user/'+id, 
 						function(data){
-							userProfiles[id] = data[0];
-							users[id] = 10;
+							self.userProfiles[id] = data[0];
+							self.users[id] = 10;
 						}, 
 						function(){
-							users[id] = 1;
+							self.users[id] = 1;
 						});
 				}()
 			}
@@ -71,13 +94,11 @@ function Downloader() {
 		var stage3 = self.findUsersInState(3);
 		// no return after this one 
 		for (i in stage3) {
-			var prot = userProfiles[stage3[i]]['protected'];
-			console.log(prot);
+			var prot = self.userProfiles[stage3[i]]['protected'];
 			if (prot === false || prot == 'false') {
-				console.log('extrafalse');
-				users[stage3[i]] = 5;
+				self.users[stage3[i]] = 5;
 			} else
-				users[stage3[i]] = 7;
+				self.users[stage3[i]] = 7;
 		}
 		var stage7 = self.findUsersInState(7, 10);
 		if (stage7.length > 0) {
@@ -85,8 +106,8 @@ function Downloader() {
 				var f = function() {
 					var id = stage7[i];
 					$.post( '/cache/user/'+id, 
-						{data: JSON.stringify(userProfiles[id])},
-						function(){users[id] = 10;}
+						{data: JSON.stringify(self.userProfiles[id])},
+						function(){self.users[id] = 10;}
 					);
 				}()
 			}
@@ -100,8 +121,8 @@ function Downloader() {
 					self.twitter(
 						'http://api.twitter.com/1/friends/ids.json?cursor=-1&user_id='+id,
 						function(data) {
-							userProfiles[id]['friends'] = data;
-							users[id] = 7;
+							self.userProfiles[id]['friends'] = data;
+							self.users[id] = 7;
 						},
 						function() {
 							self.twitterFailed = true;
@@ -120,8 +141,8 @@ function Downloader() {
 					self.pipes(
 						'http://api.twitter.com/1/friends/ids.json?cursor=-1&user_id='+id,
 						function(data) {
-							userProfiles[id]['friends'] = data[0];
-							users[id] = 7;
+							self.userProfiles[id]['friends'] = data[0];
+							self.users[id] = 7;
 						},
 						function() {
 							self.pipesFailed = true;
@@ -140,8 +161,8 @@ function Downloader() {
 				'http://api.twitter.com/1/users/lookup.json?user_id='+stage1.join(),
 				function(data) {
 					for (i in data) {
-						userProfiles[data[i]['id']] = data[i];
-						users[data[i]['id']] = 3;
+						self.userProfiles[data[i]['id']] = data[i];
+						self.users[data[i]['id']] = 3;
 					}
 				},
 				function() {
@@ -157,8 +178,8 @@ function Downloader() {
 					if (data.length == 1 && 'json' in data[0] && !('default_profile' in data[0]))
 						data = data[0]['json'];
 					for (i in data) {
-						userProfiles[data[i]['id']] = data[i];
-						users[data[i]['id']] = 3;
+						self.userProfiles[data[i]['id']] = data[i];
+						self.users[data[i]['id']] = 3;
 					}
 				},
 				function() {
@@ -166,6 +187,11 @@ function Downloader() {
 				});
 			return;
 		}
+
+		//apparently, were done!
+		$("#progress").hide();
+		$("#configurebtn").removeClass("disabled");
+
 
 
 		
@@ -185,36 +211,43 @@ function Downloader() {
 	}
 
 	self.cache = function(cacheUrl, success, error) {
+		self.usage['cache'][0] += 1;
 		$.ajax({
 			url: cacheUrl,
 			datatype: "json",
 			type: 'get',
 			error: function(xhr, textstatus, errorthrown){
+				self.usage['cache'][2] += 1;
 				if (xhr.status == 404)
 					error();	
 				else
 					alert('server cache gave an unexpected error code' + xhr.status);
 			},
 			success: function(r,a,xhr) {
+				self.usage['cache'][1] += 1;
 				success(r);
 			},
 		});
 	}
 	self.twitter = function(twitterUrl, success, error) {
+		self.usage['twitter'][0] += 1;
                 $.ajax({
                         url: twitterUrl,
                         type: 'POST',
                         dataType: "jsonp",
                         error: function(e) {
-                               error(); 
+				self.usage['twitter'][2] += 1;
+				error(); 
                         },
                         success: function(r,a,xhr) {
+				self.usage['twitter'][1] += 1;
                                 success(r);
                         },
                         timeout: 5000,
                 });
 	}
 	self.pipes = function(twitterUrl, success, error) {
+		self.usage['pipes'][2] += 1;
                 $.ajax({
                         type: 'POST',
                         data: { _id: '81263ca2954c525a92e8ebe02b9c5a82',
@@ -224,11 +257,14 @@ function Downloader() {
                         dataType: "jsonp",
                         jsonp: "_callback",
                         success: function(r,a,xhr) {
+				self.usage['pipes'][1] += 1;
                                 if (r['count'] > 0) {
                                         r = r['value']['items'];
 					success(r)
-                                } else
+                                } else {
+					self.usage['pipes'][1] += 1;
                                         error();
+				}
                         },
                         timeout: 5000,
                         error: error,
@@ -263,14 +299,14 @@ function Downloader() {
 	}
 	self.findUsersInState = function(state, maxnum) {
 		var r = [];
-		for (i in users)
-			if (r.length != maxnum && users[i] == state)
+		for (i in self.users)
+			if (r.length != maxnum && self.users[i] == state)
 				r.push(i);
 		return r;
 	}
 	self.pushAllFromState = function(state, newstate) {
-		for (i in users)
-			if (users[i] == state)
-				users[i] = newstate;
+		for (i in self.users)
+			if (self.users[i] == state)
+				self.users[i] = newstate;
 	}
 }
