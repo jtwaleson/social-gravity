@@ -12,6 +12,7 @@ function Friend(i) {
 	this.info = null;
 	this.followers = null;
 	this.strongestConnections = {};
+	this.z = 0;
 }
 Friend.prototype.draw = function() {
 	this.div = $("<div>")
@@ -43,9 +44,9 @@ Friend.prototype.draw = function() {
 				p.div.removeClass('immovable');
 				p.locked = false;
 				simulation.unlock(p);
-			} else if (confirm('Start looking up '+$(this).text()+'?')) {
+			} else if (confirm('Start looking up '+p['screen_name']+'?')) {
 				protagonists.clear();
-				protagonists.add($(this).text());
+				protagonists.add(p['screen_name']);
 				$("#networkgenerator").click();
 			}
 		});
@@ -54,6 +55,10 @@ Friend.prototype.draw = function() {
 Friend.prototype.lock = function() {
 	this.locked = true;
 	this.div.addClass('immovable');
+}
+Friend.prototype.updateZIndex = function (max) {
+	this.z = (this.z + 1) % max;
+	this.div.css('z-index', this.z);
 }
 Friend.prototype.update = function () {
 	var d = this.div;
@@ -87,8 +92,10 @@ Friend.prototype.calcStrongestConnections = function() {
 }
 Friend.prototype.setInfo = function (data) {
 	this.hasinfo = true;
+	for (var prop in data)
+		this[prop] = data[prop];
 	if (this.div != null)
-		this.div.html('<img src="'+data['profile_image_url']+'" title="'+data['screen_name']+'">');
+		this.div.html('<img width="48px" height="48px" src="'+data['profile_image_url']+'" title="'+data['screen_name']+'">');
 	this.friendsRetrieved = 'friends' in data && 'ids' in data['friends'];
 	this.prot = !this.friendsRetrieved;
 	this.friends = {};

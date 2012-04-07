@@ -20,6 +20,11 @@ function FriendManager(viewPort, simulation, downloader) {
 	self.error = function() {
 	}
 	self.getInnerConnections = function () {
+		z = 0;
+		for (i in self.persons) {
+			self.persons[i].z = z;
+			z += 1;
+		}
 		self.simulation.setFriends(self.getFriendsExport());
 		self.simulation.setConnections(self.getConnections());
 		self.simulation.start();
@@ -124,11 +129,11 @@ function FriendManager(viewPort, simulation, downloader) {
 	self.getStrength = function (a,b,m,f,c) {
 		var score = 0;
 		// simple scoring for if the users follow eachother
-		if (i in self.persons[j].friends) {
-			if (j in self.persons[i].friends)
+		if (a.id in b.friends) {
+			if (b.id in a.friends)
 				score = m; 
 			else
-				score = self.simulation.settings['friendscore'];
+				score = f;
 		}
 //		if (j in self.persons[i].friends)
 //			score += self.simulation.settings['friendscore'];
@@ -136,9 +141,9 @@ function FriendManager(viewPort, simulation, downloader) {
 //			score = 2;
 			
 		// mutual friends scores
-		for (var k in self.persons[i].friends)
-			if (k in self.persons[j].friends)
-				score += self.simulation.settings['commonscore'];
+		for (var k in a.friends)
+			if (k in b.friends)
+				score += c;
 		return score;
 	}
 	self.recalcPersonColors = function() {
