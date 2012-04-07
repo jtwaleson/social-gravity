@@ -55,12 +55,12 @@ function Downloader() {
 		var stage10 = self.findUsersInState(10);
 		for (i in stage10) {
 			var id = stage10[i];
-			$("#friend_"+id).css('background-color', 'green')
-			if (!('friends' in self.userProfiles[id] && 'ids' in self.userProfiles[id]['friends'])) {
-				$("#friend_"+id).css('background-color', 'black').text(self.userProfiles[id]['screen_name']);
-			} else {
-				$("#friend_"+id).css('background-color', 'green').text(self.userProfiles[id]['screen_name'] + ' COUNT::' + self.userProfiles[id]['friends']['ids'].length);
-			}
+			friendManager.persons[id].setInfo(self.userProfiles[id]);
+//				css('background-color', 'green').
+//				html('<img src="'+p['profile_image_url']+'" title="'+p['screen_name']+'">');
+//			if (!('friends' in p && 'ids' in p['friends'])) {
+//				$("#"+id).css('border-color', 'black');
+//			}
 				
 			self.users[id] = 11;
 		}

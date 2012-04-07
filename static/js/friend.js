@@ -85,34 +85,22 @@ Friend.prototype.calcStrongestConnections = function() {
 		}
 	}
 }
-Friend.prototype.setInfo = function (data, fromcache) {
-	if (data == null)
-		return;
-	if (fromcache) {
-		data = this.slimDown(JSON.parse(data));
-	} else {
-		data = this.slimDown(data);
-		try {sessionStorage.setItem('u_'+data['id'], JSON.stringify(data)) } catch (e) {}
-	}
-	if (this.div != null)		
-		this.div.text(data['screen_name']).removeClass('gray').addClass('halfgray').attr('title',data['description']);
-	if (data['protected'] == "false")
-		data['protected'] = false;
-	if (data['protected'] == "true")
-		data['protected'] = true;
-	this.prot = data['protected'];
+Friend.prototype.setInfo = function (data) {
+	this.hasinfo = true;
+	if (this.div != null)
+		this.div.html('<img src="'+data['profile_image_url']+'" title="'+data['screen_name']+'">');
+	this.friendsRetrieved = 'friends' in data && 'ids' in data['friends'];
+	this.prot = !this.friendsRetrieved;
+	this.friends = {};
+	
 	if (this.prot)
 		friendManager.amountprotected++;
-	this.hasinfo = true;
-	var count = 0;
-}
-Friend.prototype.setFriends = function (data) {
-	var ids = data['result']['ids'];
-	this.div.removeClass('halfgray');
-	this.friends = {};
-	for (var i in ids)
-		this.friends[ids[i]] = 1;
-	this.friendsRetrieved = true;
+	else {
+		this.div.removeClass('halfgray');
+		this.friendsRetrieved = true;
+		for (var i in data['friends']['ids'])
+			this.friends[data['friends']['ids'][i]] = 1;
+	}
 }
 Friend.prototype.drawStrongLines = function(ctx) {
 	for (var i in this.strongestConnections)

@@ -13,6 +13,7 @@ function FriendManager(viewPort, simulation, downloader) {
 	self.add = function(id) {
 		self.downloader.users[id] = 0;
 		self.persons[id] = new Friend(id);
+		self.persons[id].draw();
 		self.amount++;
 		$(".tweepcount").text(self.amount);
 	}
