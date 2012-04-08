@@ -78,7 +78,6 @@ function Protagonists(downloader) {
 			self.rm(0);
 	}
 	self.getTr = function(p, i) {
-		console.log(p);
 		var a = $("#protagonists .dummyrow").clone();
 		a.removeClass('dummyrow');
 		a.appendTo("#protagonists tbody");
@@ -89,7 +88,7 @@ function Protagonists(downloader) {
 		a.find('.friends input[type=text]').val(typeof(p['friends']) == 'undefined' || typeof(p['friends']['ids']) == 'undefined' ? '?' : p['friends']['ids'].length);
 		for (var k in {friends: 1, followers: 1, self: 1}) {
 			if (p['include'+k]) {
-				a.find('.'+k+' label').addClass('active');
+				a.find('.'+k+' span').addClass('active');
 				a.find('.'+k+' input[type=checkbox]').attr('checked', 'checked');
 			} else {
 				a.find('.'+k+' input[type=checkbox]').removeAttr('checked');
