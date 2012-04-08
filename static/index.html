@@ -1,8 +1,8 @@
 <html>
 	<head>
 		<title>Twitter network analysis</title>
-		<script type='text/javascript' src='bootstrap/js/bootstrap.min.js'></script>
-		<script type='text/javascript' src='js/external/jquery.old.min.js'></script>
+		<script type='text/javascript' src='js/external/jquery.min.js'></script>
+		<script type='text/javascript' src='bootstrap/js/bootstrap.js'></script>
 		<script type='text/javascript' src='js/external/jquery.mousewheel.min.js'></script>
 		<script type='text/javascript' src='js/external/jquery-ui-1.8.16.custom.min.js'></script>
 		<script type='text/javascript' src='js/external/jquery.jgrowl.min.js'></script>
@@ -180,13 +180,9 @@ $("#modal-connection-configurator .slider").each(function(){
 
 
 body {
-	padding-top: 40px;
 	position: relative;
 	overflow: hidden;
 	height: 100%;
-}
-.container {
-	width: 100%;
 }
 #networkgenerator {
 	margin-top: 5px;
@@ -261,8 +257,8 @@ body #playfield .friend.immovable{
 		</style>
 	</head>
 	<body>
-		<div class='topbar'>
-			<div class='fill'>
+		<div class='navbar navbar-fixed-top'>
+			<div class='navbar-inner'>
 				<div class='container'>
 					<a class='brand' id='brand' href='/'>Twitter analysis</a>
 					<a class='btn primary pull-left' id='networkgenerator'>Generate a network</a>
