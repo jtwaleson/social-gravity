@@ -22,14 +22,20 @@ function Simulation() {
 		if (typeof data['data'] == 'object') {
 			if ('friends' in data['data']) {
 				var f = data['data']['friends'];
+				var count = 0;
 				for (var i in f) {
 					p = self.friendmanager.persons[i];
+					
 					if (!p.locked) {
 						p.x = f[i]['x'];
 						p.y = f[i]['y'];
 					}
 					p.n = f[i]['n'];
 					self.friendmanager.persons[i].update();
+					count++;
+				}
+				for (var i in f) {
+					self.friendmanager.persons[i].updateZIndex(count);
 				}
 				friendManager.drawAllLines();
 				self.lastUpdate = (new Date()).getTime();

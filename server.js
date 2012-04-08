@@ -22,7 +22,10 @@ function find(response, db, type, id) {
 		collection.findOne(searchquery, function(err, result) {
 			if (result != null) {
 				response.writeHead(200, {'Cache-Control': 'max-age=432000', 'Content-Type': 'application/json; charset=utf-8'});
-				response.end(JSON.stringify([result]));
+				if (type == 'followers')
+					response.end(JSON.stringify(result));
+				else
+					response.end(JSON.stringify([result]));
 			} else {
 				response.writeHead(404);
 				response.end('not found');

@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<title>Twitter network analysis</title>
+		<script type='text/javascript' src='js/external/jquery.min.js'></script>
+		<script type='text/javascript' src='js/downloader.js'></script>
+		<script type='text/javascript'>
+			var users = {};
+			var userProfiles = {};
+			jQuery.ajaxPrefilter(function( options ) {
+				options.global = true;
+			});
+			$(function() {
+				$('body').ajaxStop(function(){
+					downloader.go();
+				});
+				var downloader = new Downloader();
+				$("#protagonists").submit(function(e){
+					e.preventDefault();
+					$("#friends").empty();
+					downloader.byUserName(
+						$(this).find('input').val(), 
+						function(profile){
+							ids = profile['friends']['ids'];
+							users = {};
+							userProfiles = {};
+							for (i in ids) {
+								$("<li>").attr('id', 'friend_'+ids[i]).appendTo("#friends").text(ids[i]);
+								users[ids[i]] = 0;
+							}
+							downloader.go();
+						});
+				});
+				
+			});
+		</script>
+	</head>
+	<body>
+		<form id='protagonists' action='#'>
+			<input type='text'>
+		</form>
+		<ul id='friends'>
+		</ul>
+	</body>
+</html>
