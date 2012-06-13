@@ -90,11 +90,11 @@ function FriendManager(viewPort, simulation, downloader) {
 
 		for (var i in self.persons) {
 			a = self.persons[i];
+			if (typeof conn[i] == 'undefined')
+				conn[i] = {};
 			for (var j in a.friends)
 				if (j in self.persons) {
 					b = self.persons[j];
-					if (typeof conn[i] == 'undefined')
-						conn[i] = {};
 					if (typeof conn[i][j] == 'undefined') {
 						var r = self.getStrength(a,b,m,f,c);
 						if (r > t) 
@@ -118,6 +118,14 @@ function FriendManager(viewPort, simulation, downloader) {
 		}
 		for (var i in self.persons)
 			self.persons[i].div.fadeTo('slow', self.simulation.settings['minvisibility'] + Math.max(0, (1-self.simulation.settings['minvisibility'])*(self.persons[i].total/max_total)));
+		for (var i in self.persons)
+			if (self.persons[i].n >= self.simulation.settings['closefriendthreshold'] || self.persons[i].locked) {
+				self.persons[i].div.show();
+				self.persons[i].visible = true;
+			} else {
+				self.persons[i].div.hide();
+				self.persons[i].visible = false;
+			}
 		return conn;
 	}
 	self.updateAll = function() {

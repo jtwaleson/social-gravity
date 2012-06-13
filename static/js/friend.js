@@ -58,7 +58,7 @@ Friend.prototype.lock = function() {
 }
 Friend.prototype.updateZIndex = function (max) {
 	this.z = (this.z + 1) % max;
-	this.div.css('z-index', this.z);
+	this.div.css('z-index', rand(0,10));
 }
 Friend.prototype.update = function () {
 	var d = this.div;
