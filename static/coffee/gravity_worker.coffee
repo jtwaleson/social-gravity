@@ -1,0 +1,2 @@
+@onmessage = (event) ->
+    postMessage "Roger!"
