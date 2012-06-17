@@ -2,59 +2,18 @@
 <html>
     <head>
         <title>Twitter network analysis</title>
-        <script type='text/javascript' src='js/external/jquery.min.js'></script>
+        <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+        <script type='text/javascript' src='js/downloader.js'></script>
         <script type='text/javascript' src='js/friend.js'></script>
-        <style type='text/css'>
-body {
-    position: relative;
-    overflow: hidden;
-    height: 100%;
-    background: url('img/8dgutxw.png') repeat;
-    border: 0;
-    margin: 0;
-}
-ul#menu {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-ul#menu li {
-    margin: 10px;
-}
-ul#menu li button {
-    border: 1px;
-    border-radius: 3px;
-    background-color: #333;
-    color: #ddd;
-    display: inline-block;
-    text-align: center;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    width: 2em;
-    font-weight: bold;
-}
-ul#menu li button#add-protagonist {
-    background-color: green;
-}
-        </style>
+        <script type='text/javascript' src='js/simulation.js'></script>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/fugly.css">
     </head>
     <body>
         <ul id='menu'>
-            <li>
-                <button id='add-protagonist'>+</button>
-            </li>
-            <li>
-                <button>H</button>
-            </li>
-            <li>
-                <button>R</button>
-            </li>
-            <li>
-                <button>+</button>
-            </li>
-            <li>
-                <button>-</button>
-            </li>
         </ul>
+        <div id='playfield'>
+        </div>
+        <canvas width='4000px' height='2000px' id='canvas'/>
     </body>
 </html>
