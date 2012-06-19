@@ -43,11 +43,11 @@ start = ->
   for idA, friendA of friends
     for idB, friendB of friends
       if idA of friendB.friends and idB of friendA.friends
-        move(friendA, friendB.x, friendB.y, 5)
+        move(friendB, friendA.x, friendA.y, 5)
       else if idA of friendB.friends
-        move(friendA, friendB.y, friendB.y, 1)
+        move(friendB, friendA.x, friendA.y, 1)
       else
-        move(friendA, friendB.y, friendB.y, -1)
+        move(friendA, friendB.y, friendB.y, -0.3)
       
   list = for k,i of friends
     {id: i.id, x: i.x, y:i.y}
