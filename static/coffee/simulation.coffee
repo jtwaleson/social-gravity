@@ -31,3 +31,7 @@ $ ->
   li = $("<li>")
   li.append(btn)
   li.appendTo $("#menu")
+
+  $('#playfield').mousewheel( (e, delta) ->
+    console.log(e)
+  )

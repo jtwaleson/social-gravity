@@ -6,6 +6,8 @@ body {
     position: absolute;
     overflow: hidden;
     height: 100%;
+    width: 100%;
+    position: fixed;
     background: url('../img/8dgutxw.png') repeat;
     border: 0;
     margin: 0;
