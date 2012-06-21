@@ -49,32 +49,39 @@ class Simulation
     friend.redraw() for id, friend of @friends
   redraw_lines: ->
     ctx = $("#canvas")[0].getContext("2d")
-#    pos = @div.position()
-#    pos.left += @div.width()/2
-#    pos.top += @div.height()/2
-#    ctx.beginPath()
-#    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.lineWidth = 3
+
     for id, friend of @friends
       friend.div.removeClass('follows').removeClass('followed')
+
     for id, highlighted_friend of @friends when highlighted_friend.highlight
+      pos = highlighted_friend.div.position()
+      pos.left += highlighted_friend.div.width()/2
+      pos.top += highlighted_friend.div.height()/2
+
       for followed_by_highlighted, _ of highlighted_friend.friends when followed_by_highlighted of @friends
-        @friends[followed_by_highlighted].div.addClass('followed')
+        other = @friends[followed_by_highlighted].div
+        other.addClass('followed')
+        if other.length > 0
+          otherpos = other.position()
+          otherpos.left += other.width()/2
+          otherpos.top += other.height()/2
+          ctx.moveTo(pos.left, pos.top)
+          ctx.lineTo(otherpos.left, otherpos.top)
+
       for id, friend of @friends
         if highlighted_friend.id of friend.friends
-          friend.div.addClass('follows')
-#        for f of @friends
-#          if id in f.friends
-#            f.div.addClass('followed')
-        
-#      other = $("#"+i)
-#      if other.length > 0
-#        otherpos = other.position()
-#        otherpos.left += other.width()/2
-#        otherpos.top += other.height()/2
-#        ctx.moveTo(pos.left, pos.top)
-#        ctx.lineTo(otherpos.left, otherpos.top)
-#    ctx.strokeStyle = '#000'
-#    ctx.stroke()
+          other = friend.div
+          other.addClass('follows')
+          otherpos = other.position()
+          otherpos.left += other.width()/2
+          otherpos.top += other.height()/2
+          ctx.moveTo(pos.left, pos.top)
+          ctx.lineTo(otherpos.left, otherpos.top)
+
+    ctx.strokeStyle = '#000'
+    ctx.stroke()
   
 
 class Button
