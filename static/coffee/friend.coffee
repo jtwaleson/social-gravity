@@ -8,10 +8,11 @@ class Friend
     @x = Math.random()*1800
     @y = Math.random()*800
     @highlight = no
+    @lines_to = []
 
     @div = $("<div>")
           .addClass('friend')
-          .appendTo("#playfield")
+          .appendTo("body")
           .attr('id', @id)
           .bind('click', (event) => @click())
           .bind('dblclick', (event) => @dblclick())
@@ -24,7 +25,7 @@ class Friend
       .appendTo(@div)
            
     simulation.register(@)
-    @.redraw()
+    @redraw()
   click: ->
     @highlight = !@highlight
     @div.toggleClass('highlight')
@@ -34,10 +35,20 @@ class Friend
     @div.css('background-color', 'red')
   setX: (x) ->
     @x = x
-    @.redraw()
   setY: (y) ->
     @y = y
-    @.redraw()
+  redraw_lines: (ctx) ->
+    pos = @div.position()
+    pos.left += @div.width()/2
+    pos.top += @div.height()/2
+
+    for friend in @lines_to
+      otherpos = friend.div.position()
+      otherpos.left += friend.div.width()/2
+      otherpos.top += friend.div.height()/2
+      ctx.moveTo(pos.left, pos.top)
+      ctx.lineTo(otherpos.left, otherpos.top)
+
   redraw: ->
     @div.css('top', @zoom.translate_y(@y))
         .css('left', @zoom.translate_x(@x))

@@ -35,6 +35,7 @@ class Simulation
       friend = @friends[d.id]
       friend.setX(d.x)
       friend.setY(d.y)
+    @redraw()
   register: (friend) ->
     @friends[friend.id] = friend
     @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})
@@ -47,42 +48,32 @@ class Simulation
     @gravity_worker.postMessage({start_stop: yes})
   redraw: ->
     friend.redraw() for id, friend of @friends
-  redraw_lines: ->
-    ctx = $("#canvas")[0].getContext("2d")
+
+    canvas = $("#canvas")[0]
+    canvas.width--
+    canvas.width++
+    ctx = canvas.getContext("2d")
     ctx.beginPath()
     ctx.lineWidth = 3
-
+    friend.redraw_lines(ctx) for id, friend of @friends
+    ctx.strokeStyle = '#000'
+    ctx.stroke()
+  
+  redraw_lines: ->
     for id, friend of @friends
       friend.div.removeClass('follows').removeClass('followed')
-
+      friend.lines_to = []
     for id, highlighted_friend of @friends when highlighted_friend.highlight
-      pos = highlighted_friend.div.position()
-      pos.left += highlighted_friend.div.width()/2
-      pos.top += highlighted_friend.div.height()/2
-
       for followed_by_highlighted, _ of highlighted_friend.friends when followed_by_highlighted of @friends
         other = @friends[followed_by_highlighted].div
         other.addClass('followed')
-        if other.length > 0
-          otherpos = other.position()
-          otherpos.left += other.width()/2
-          otherpos.top += other.height()/2
-          ctx.moveTo(pos.left, pos.top)
-          ctx.lineTo(otherpos.left, otherpos.top)
-
+        highlighted_friend.lines_to.push(@friends[followed_by_highlighted])
       for id, friend of @friends
         if highlighted_friend.id of friend.friends
           other = friend.div
           other.addClass('follows')
-          otherpos = other.position()
-          otherpos.left += other.width()/2
-          otherpos.top += other.height()/2
-          ctx.moveTo(pos.left, pos.top)
-          ctx.lineTo(otherpos.left, otherpos.top)
-
-    ctx.strokeStyle = '#000'
-    ctx.stroke()
-  
+          friend.lines_to.push(highlighted_friend)
+    @redraw()
 
 class Button
   constructor: (keystroke, divclass, func) ->
@@ -101,7 +92,7 @@ class Button
 window.simulation = new Simulation
 window.Button = Button
 $ ->
-  $('#playfield').mousewheel( (e, delta) ->
+  $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)
   )
   new Button("s", "", ->

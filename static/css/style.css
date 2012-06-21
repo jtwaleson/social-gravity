@@ -49,41 +49,59 @@ ul#menu li button#add-protagonist {
     z-index: 10;
     background-color: white;
     font-weight: bold;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+}
+.friend:hover {
+    z-index: 200;
+    border-width: 4px;
+}
+.friend.followed img,
+.friend.follows img,
+.friend.highlight img {
+    background-color: white;
 }
 .friend.followed.follows {
     background-color: purple !important;
-
+    box-shadow: 0 0 70px purple;
 }
 .friend.followed {
     background-color: blue;
     z-index: 50;
+    box-shadow: 0 0 70px blue;
+    color: white;
 }
 .friend.follows {
     background-color: green;
     z-index: 50;
+    box-shadow: 0 0 70px green;
 }
-.friend.highlight {
-    background-color: black;
+body .friend.highlight,
+body .friend.highlight.follows,
+body .friend.highlight.followed,
+body .friend.highlight.follows.followed {
+    background-color: black !important;
     z-index: 100;
     box-shadow: 0 0 70px black;
+    color: white;
+}
+button {
+    cursor: pointer;
 }
 .friend img {
     height: 48px;
     width: 48px;
     opacity: 0.5;
 }
-#playfield {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 12;
-}
 #canvas {
     pointer-events: none;
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 11;
+    z-index: 15;
 }
