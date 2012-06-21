@@ -56,15 +56,16 @@ ul#menu li button#add-protagonist {
     -ms-user-select: none;
     user-select: none;
     cursor: pointer;
+    overflow: hidden;
+}
+.friend:hover img {
+    opacity: 1;
 }
 .friend:hover {
-    z-index: 200;
+    z-index: 200 !important;
     border-width: 4px;
-}
-.friend.followed img,
-.friend.follows img,
-.friend.highlight img {
-    background-color: white;
+    margin-left: -2px;
+    margin-top: -2px;
 }
 .friend.followed.follows {
     background-color: purple !important;
@@ -81,14 +82,18 @@ ul#menu li button#add-protagonist {
     z-index: 50;
     box-shadow: 0 0 70px green;
 }
+body .friend.highlight img {
+    opacity: 1;
+}
 body .friend.highlight,
-body .friend.highlight.follows,
-body .friend.highlight.followed,
 body .friend.highlight.follows.followed {
     background-color: black !important;
     z-index: 100;
     box-shadow: 0 0 70px black;
     color: white;
+    border: 4px solid white;
+    margin-left: -2px;
+    margin-top: -2px;
 }
 button {
     cursor: pointer;
@@ -103,5 +108,5 @@ button {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 15;
+    z-index: 300;
 }
