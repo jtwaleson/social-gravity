@@ -1,12 +1,13 @@
 class Friend
   constructor: (data) ->
+    @friends = {}
     if data.friends.length == 1
-      @friends = data.friends[0].ids
-    else
-      @friends = []
+      for id in data.friends[0].ids
+        @friends[id] = 1
     @id = data.id
     @x = Math.random()*1800
     @y = Math.random()*800
+    @highlight = no
 
     @div = $("<div>")
           .addClass('friend')
@@ -22,40 +23,26 @@ class Friend
       .addClass("name")
       .appendTo(@div)
            
-    @.reposition()
     simulation.register(@)
-    friends[@id] = @
+    @.redraw()
   click: ->
-    @div.css('background-color', 'black')
-    ctx = $("#canvas")[0].getContext("2d")
-    pos = @div.position()
-    pos.left += @div.width()/2
-    pos.top += @div.height()/2
-    ctx.beginPath()
-    ctx.lineWidth = 3
-    for i in @friends
-      other = $("#"+i)
-      if other.length > 0
-        otherpos = other.position()
-        otherpos.left += other.width()/2
-        otherpos.top += other.height()/2
-        ctx.moveTo(pos.left, pos.top)
-        ctx.lineTo(otherpos.left, otherpos.top)
-    ctx.strokeStyle = '#000'
-    ctx.stroke()
+    @highlight = !@highlight
+    @div.toggleClass('highlight')
+    simulation.redraw_lines()
   
   dblclick: ->
     @div.css('background-color', 'red')
   setX: (x) ->
     @x = x
-    @.reposition()
+    @.redraw()
   setY: (y) ->
     @y = y
-    @.reposition()
-  reposition: ->
-    @div.css('top', @y)
-        .css('left', @x)
+    @.redraw()
+  redraw: ->
+    @div.css('top', @zoom.translate_y(@y))
+        .css('left', @zoom.translate_x(@x))
+  set_zoom: (zoom) ->
+    @zoom = zoom
 
   
 window.Friend = Friend
-window.friends = {}

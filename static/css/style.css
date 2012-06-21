@@ -46,9 +46,26 @@ ul#menu li button#add-protagonist {
     text-align: center;
     font-size: 11px;
     font-family: Georgia;
-    z-index: 0;
+    z-index: 10;
     background-color: white;
     font-weight: bold;
+}
+.friend.followed.follows {
+    background-color: purple !important;
+
+}
+.friend.followed {
+    background-color: blue;
+    z-index: 50;
+}
+.friend.follows {
+    background-color: green;
+    z-index: 50;
+}
+.friend.highlight {
+    background-color: black;
+    z-index: 100;
+    box-shadow: 0 0 70px black;
 }
 .friend img {
     height: 48px;
@@ -61,11 +78,11 @@ ul#menu li button#add-protagonist {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 5;
+    z-index: 12;
 }
 #canvas {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 11;
 }

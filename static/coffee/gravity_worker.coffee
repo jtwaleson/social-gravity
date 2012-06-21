@@ -1,5 +1,6 @@
 friends = {}
 stop = no
+run = no
 move = (a, b_x, b_y, amount) ->
   dx = a.x - b_x
   dy = a.y - b_y
@@ -39,6 +40,7 @@ move = (a, b_x, b_y, amount) ->
 start = ->
   if stop
     stop = no
+    run = no
     return
   for idA, friendA of friends
     for idB, friendB of friends
@@ -60,13 +62,21 @@ randomize = (friend) ->
   postMessage([{id: friend.id, x: friend.x, y:friend.y}])
   
 @onmessage = (event) ->
+  if 'start_stop' of event.data
+    if run
+      event.data['stop'] = yes
+    else
+      event.data['start'] = yes
+
   if 'new_friend' of event.data
     friends[event.data.new_friend] = {x: event.data.x, y: event.data.y, id: event.data.new_friend, friends: {}}
     if 'friends' of event.data
       for f in event.data.friends
         friends[event.data.new_friend].friends[f] = 1
   else if 'stop' of event.data
+    run = no
     stop = yes
   else if 'start' of event.data
+    run = yes
     start()
        

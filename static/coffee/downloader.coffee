@@ -106,38 +106,25 @@ class Downloader
         success(profile)
       error
     )
-        
-window.Downloader = Downloader
-  
-    
 
 $ ->
   downloader = new Downloader
-  btn = $("<button>")
-            .addClass("glow")
-            .text("+")
-            .click(
-              (event) ->
-                $(@).removeClass('glow')
-                downloader.by_user_name(
-                  'jtwaleson'
-                  (data) =>
-                    friend = new Friend(data)
-                    for id in data.friends[0].ids
-                      do (id) ->
-                        downloader.by_user_id(
-                          id
-                          (data) =>
-                            new Friend(data)
-                          (message) =>
-                            alert(message)
-                        )
-                  (message) =>
-                    alert(message)
-                )
+  new Button("+", "glow", ->
+    $(@).removeClass('glow')
+    downloader.by_user_name(
+      'jtwaleson'
+      (data) =>
+        friend = new Friend(data)
+        for id in data.friends[0].ids
+          do (id) ->
+            downloader.by_user_id(
+              id
+              (data) =>
+                new Friend(data)
+              (message) =>
+                alert(message)
             )
-                        
-  li = $("<li>")
-  li.append(btn)
-  li.appendTo $("#menu")
-
+      (message) =>
+        alert(message)
+    )
+  )
