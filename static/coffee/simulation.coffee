@@ -5,6 +5,10 @@ class Zoom
     @x = 0
     @y = 0
     @zoom = 1
+  translate_x_back: (x) ->
+    (x * @zoom) + @x
+  translate_y_back: (y) ->
+    (y * @zoom) + @y
   translate_x: (x) ->
     (x - @x)/@zoom
   translate_y: (y) ->
