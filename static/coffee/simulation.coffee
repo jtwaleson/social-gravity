@@ -5,6 +5,26 @@ class Zoom
     @x = 0
     @y = 0
     @zoom = 1
+    @mousedown = no
+    $("body").mousedown( (event) =>
+      @draglocation_x = event.pageX
+      @draglocation_y = event.pageY
+      @mousedown = yes
+    )
+    $("body").mouseup( =>
+      @mousedown = no
+    )
+    $("body").mousemove( (event) =>
+      if @mousedown
+        dx = @draglocation_x - event.pageX
+        dy = @draglocation_y - event.pageY
+        if Math.abs(dx) + Math.abs(dy) > 50
+          @x += dx
+          @y += dy
+          simulation.redraw()
+          @draglocation_x = event.pageX
+          @draglocation_y = event.pageY
+    )
   translate_x_back: (x) ->
     (x * @zoom) + @x
   translate_y_back: (y) ->
@@ -99,9 +119,9 @@ class Button
     shortcut.add(keystroke, func)
 
 
-window.simulation = new Simulation
 window.Button = Button
 $ ->
+  window.simulation = new Simulation
   $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)
   )
