@@ -114,8 +114,9 @@ $ ->
     downloader.by_user_name(
       'jtwaleson'
       (data) =>
-        friend = new Friend(data)
-        for id in data.friends[0].ids
+        if data.id not of simulation.friends
+          friend = new Friend(data)
+        for id in data.friends[0].ids when id not of simulation.friends
           do (id) ->
             downloader.by_user_id(
               id

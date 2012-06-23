@@ -93,5 +93,5 @@ randomize = (friend) ->
     run = yes
     start()
   else if 'new_x' of event.data
-    center_x = event.data.new_x
-    center_y = event.data.new_y
+    friends[event.data.id].x = event.data.new_x
+    friends[event.data.id].y = event.data.new_y

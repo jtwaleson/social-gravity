@@ -58,6 +58,9 @@ class Simulation
     @button = new Button("&#x25b6;", "s",  "", =>
       @toggle()
     )
+    new Button("chaos", "r",  "", =>
+      @randomize_positions()
+    )
   message_from_worker: (event) =>
     if 'console' of event.data
       console.log(event.data.console)
@@ -68,6 +71,11 @@ class Simulation
       friend.setY(d.y)
     @redraw()
     @gravity_worker.postMessage({continue: yes})
+  randomize_positions: ->
+    for id, friend of @friends
+      friend.randomize_position()
+      @gravity_worker.postMessage({id: friend.id, new_x: friend.x, new_y: friend.y})
+    @redraw()
   register: (friend) ->
     @friends[friend.id] = friend
     @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})

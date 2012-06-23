@@ -5,11 +5,9 @@ class Friend
       for id in data.friends[0].ids
         @friends[id] = 1
     @id = data.id
-    @x = Math.random()*1800
-    @y = Math.random()*800
     @highlight = no
     @lines_to = []
-
+    @randomize_position()
     @div = $("<div>")
           .addClass('friend')
           .appendTo("body")
@@ -27,6 +25,9 @@ class Friend
            
     simulation.register(@)
     @redraw()
+  randomize_position: ->
+    @x = Math.random()*innerWidth
+    @y = Math.random()*innerHeight
   click: ->
     @highlight = !@highlight
     @div.toggleClass('highlight')
