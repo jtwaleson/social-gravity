@@ -19,8 +19,8 @@ class Zoom
         dx = @draglocation_x - event.pageX
         dy = @draglocation_y - event.pageY
         if Math.abs(dx) + Math.abs(dy) > 50
-          @x += dx
-          @y += dy
+          @x += dx*@zoom
+          @y += dy*@zoom
           simulation.redraw()
           @draglocation_x = event.pageX
           @draglocation_y = event.pageY
@@ -54,6 +54,10 @@ class Simulation
     @friends = {}
     @gravity_worker = new Worker 'js/gravity_worker.js'
     @gravity_worker.onmessage = @message_from_worker
+    @running = no
+    @button = new Button("&#x25b6;", "s",  "", =>
+      @toggle()
+    )
   message_from_worker: (event) =>
     if 'console' of event.data
       console.log(event.data.console)
@@ -70,10 +74,17 @@ class Simulation
     friend.set_zoom(@zoom)
   start: ->
     @gravity_worker.postMessage({start: yes})
+    @running = yes
+    $(@button.div).html('&#x25a0;')
   stop: ->
     @gravity_worker.postMessage({stop: yes})
-  start_stop: ->
-    @gravity_worker.postMessage({start_stop: yes})
+    @running = no
+    $(@button.div).html('&#x25b6;')
+  toggle: ->
+    if @running
+      @stop()
+    else
+      @start()
   redraw: ->
     friend.redraw() for id, friend of @friends
 
@@ -107,29 +118,20 @@ class Simulation
 
 class Button
   constructor: (caption, keystroke, divclass, func) ->
-    btn = $("<button>")
+    @div = $("<button>")
               .html(caption)
               .addClass(divclass)
               .click(func)
               .attr('title', 'Hot key: ' + keystroke)
                           
     li = $("<li>")
-    li.append(btn)
+    li.append(@div)
     li.appendTo $("#menu")
-    shortcut.add(keystroke, func)
-
+    shortcut.add(keystroke, => @div.click())
 
 window.Button = Button
 $ ->
   window.simulation = new Simulation
   $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)
-  )
-  new Button("&#x25b6;", "s",  "", ->
-    $(@).toggleClass("active")
-    if $(@).is('.active')
-      $(@).html('&#x25a0;')
-    else
-      $(@).html('&#x25b6;')
-    simulation.start_stop()
   )
