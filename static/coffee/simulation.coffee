@@ -35,6 +35,9 @@ class Simulation
     @gravity_worker = new Worker 'js/gravity_worker.js'
     @gravity_worker.onmessage = @message_from_worker
   message_from_worker: (event) =>
+    if 'console' of event.data
+      console.log(event.data.console)
+      return
     for d in event.data
       friend = @friends[d.id]
       friend.setX(d.x)
@@ -79,14 +82,16 @@ class Simulation
           other.addClass('follows')
           friend.lines_to.push(highlighted_friend)
     @redraw()
+  new_center: (x,y) ->
+    @gravity_worker.postMessage({new_x: x, new_y: y})
 
 class Button
-  constructor: (keystroke, divclass, func) ->
+  constructor: (caption, keystroke, divclass, func) ->
     btn = $("<button>")
-              .text(keystroke)
+              .html(caption)
               .addClass(divclass)
-              .click( func
-              )
+              .click(func)
+              .attr('title', 'Hot key: ' + keystroke)
                           
     li = $("<li>")
     li.append(btn)
@@ -100,6 +105,11 @@ $ ->
   $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)
   )
-  new Button("s", "", ->
+  new Button("&#x25b6;", "s",  "", ->
+    $(@).toggleClass("active")
+    if $(@).is('.active')
+      $(@).html('&#x25a0;')
+    else
+      $(@).html('&#x25b6;')
     simulation.start_stop()
   )
