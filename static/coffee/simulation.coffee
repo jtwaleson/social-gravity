@@ -58,7 +58,7 @@ class Simulation
     @button = new Button("&#x25b6;", "s",  "", =>
       @toggle()
     )
-    new Button("chaos", "r",  "", =>
+    new Button("&Psi;", "r",  "", =>
       @randomize_positions()
     )
   message_from_worker: (event) =>
