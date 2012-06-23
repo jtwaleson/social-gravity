@@ -40,6 +40,7 @@ class Simulation
       friend.setX(d.x)
       friend.setY(d.y)
     @redraw()
+    @gravity_worker.postMessage({continue: yes})
   register: (friend) ->
     @friends[friend.id] = friend
     @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})

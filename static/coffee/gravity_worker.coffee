@@ -54,7 +54,6 @@ start = ->
   list = for k,i of friends
     {id: i.id, x: i.x, y:i.y}
   postMessage(list)
-  setTimeout(start, 0)
 
 randomize = (friend) ->
   friend.x += Math.random()*4 - 2
@@ -73,10 +72,11 @@ randomize = (friend) ->
     if 'friends' of event.data
       for f in event.data.friends
         friends[event.data.new_friend].friends[f] = 1
+  else if 'continue' of event.data
+    start()
   else if 'stop' of event.data
     run = no
     stop = yes
   else if 'start' of event.data
     run = yes
     start()
-       
