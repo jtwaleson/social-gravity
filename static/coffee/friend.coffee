@@ -7,6 +7,7 @@ class Friend
     @id = data.id
     @highlight = no
     @lines_to = []
+    @name = data.screen_name
     @randomize_position()
     @div = $("<div>")
           .addClass('friend')

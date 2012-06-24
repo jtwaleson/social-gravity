@@ -55,22 +55,28 @@ class Simulation
     @gravity_worker = new Worker 'js/gravity_worker.js'
     @gravity_worker.onmessage = @message_from_worker
     @running = no
-    @button = new Button("&#x25b6;", "s",  "", =>
+    @button = new Button("&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
     )
-    new Button("&Psi;", "r",  "", =>
+    new Button("&Psi;", "Randomize", "r",  "", =>
       @randomize_positions()
     )
   message_from_worker: (event) =>
     if 'console' of event.data
       console.log(event.data.console)
       return
-    for d in event.data
-      friend = @friends[d.id]
-      friend.setX(d.x)
-      friend.setY(d.y)
-    @redraw()
-    @gravity_worker.postMessage({continue: yes})
+    if 'popular_guys' of event.data
+      div = $("#who_to_follow")
+      div.empty()
+      for id, amount of event.data.popular_guys
+        $("<p>").text(@friends[id].name).appendTo(div)
+    else
+      for d in event.data
+        friend = @friends[d.id]
+        friend.setX(d.x)
+        friend.setY(d.y)
+      @redraw()
+      @gravity_worker.postMessage({continue: yes})
   randomize_positions: ->
     for id, friend of @friends
       friend.randomize_position()
@@ -121,16 +127,16 @@ class Simulation
           other.addClass('follows')
           friend.lines_to.push(highlighted_friend)
     @redraw()
-  new_center: (x,y) ->
-    @gravity_worker.postMessage({new_x: x, new_y: y})
+  who_is_popular_here: (x,y) =>
+    @gravity_worker.postMessage({who_is_popular_here: yes, x: x, y: y, zoom: @zoom.zoom})
 
 class Button
-  constructor: (caption, keystroke, divclass, func) ->
+  constructor: (caption, description, keystroke, divclass, func) ->
     @div = $("<button>")
               .html(caption)
               .addClass(divclass)
               .click(func)
-              .attr('title', 'Hot key: ' + keystroke)
+              .attr('title', description + ' - Hot key: ' + keystroke)
                           
     li = $("<li>")
     li.append(@div)

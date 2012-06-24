@@ -122,7 +122,6 @@ body .friend.highlight.follows.followed {
 #spyglass_glow {
     position: absolute;
     border-radius: 50px;
-    opacity: 1;
     height: 100px;
     width: 100px;
     margin-left: -50px;
@@ -130,6 +129,7 @@ body .friend.highlight.follows.followed {
     top: 0;
     left: 0;
     box-shadow: 0 0 150px red;
+    background-color: red;
 }
 #who_to_follow {
     position: absolute;

@@ -7,7 +7,7 @@ class Spyglass
       .mousemove((event) =>
         @glow.css('left', event.pageX)
         @glow.css('top', event.pageY)
-        simulation.new_center(simulation.zoom.translate_x_back(event.pageX),simulation.zoom.translate_y_back(event.pageY))
+        simulation.who_is_popular_here(simulation.zoom.translate_x_back(event.pageX),simulation.zoom.translate_y_back(event.pageY))
       )
     @glow = $("<div>")
       .attr("id", "spyglass_glow")
@@ -18,7 +18,7 @@ class Spyglass
     
 $ ->
   spyglass = new Spyglass
-  new Button("&#x2735;", "i", "", ->
+  new Button("&#x2735;", "Find new interesting people in an area", "i", "", ->
     spyglass.overlay.toggle()
     $(@).toggleClass("active")
   )

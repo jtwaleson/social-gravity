@@ -109,7 +109,7 @@ class Downloader
 
 $ ->
   downloader = new Downloader
-  new Button("@", "a", "glow", ->
+  new Button("@", "Add a new person of interest", "a", "glow", ->
     $(@).removeClass('glow')
     downloader.by_user_name(
       'jtwaleson'

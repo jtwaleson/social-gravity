@@ -95,3 +95,17 @@ randomize = (friend) ->
   else if 'new_x' of event.data
     friends[event.data.id].x = event.data.new_x
     friends[event.data.id].y = event.data.new_y
+  else if 'who_is_popular_here' of event.data
+    popular_guys = {}
+    r = 100
+    x = event.data.x
+    y = event.data.y
+    z = event.data.zoom
+    left   = x - r*z
+    right  = x + r*z
+    top    = y - r*z
+    bottom = y + r*z
+    for id, f of friends when left < f.x < right and top < f.y < bottom
+      popular_guys[id] = 1
+    postMessage({popular_guys: popular_guys})
+      
