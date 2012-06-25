@@ -1,5 +1,6 @@
 class Friend
   constructor: (data) ->
+    @data = data
     @friends = {}
     if data.friends.length == 1
       for id in data.friends[0].ids
@@ -26,6 +27,12 @@ class Friend
            
     simulation.register(@)
     @redraw()
+  get_strings: ->
+    s = [@data.description, @data.location]
+    if @data.status
+      if @data.status.text
+        s.push(@data.status.text)
+    s.join(" ")
   randomize_position: ->
     @x = Math.random()*innerWidth
     @y = Math.random()*innerHeight
@@ -42,13 +49,13 @@ class Friend
     @y = y
   redraw_lines: (ctx) ->
     pos = @div.position()
-    pos.left += @div.outerWidth()/2
-    pos.top += @div.outerHeight()/2
+#    pos.left += @div.outerWidth()/2
+#    pos.top += @div.outerHeight()/2
 
     for friend in @lines_to
       otherpos = friend.div.position()
-      otherpos.left += friend.div.outerWidth()/2
-      otherpos.top += friend.div.outerHeight()/2
+#      otherpos.left += friend.div.outerWidth()/2
+#      otherpos.top += friend.div.outerHeight()/2
       dx = pos.left - otherpos.left
       dy = pos.top - otherpos.top
       line_len = Math.sqrt(dx*dx+dy*dy) - friend.div.width()/1.8

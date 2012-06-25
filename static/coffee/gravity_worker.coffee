@@ -96,8 +96,8 @@ randomize = (friend) ->
     friends[event.data.id].x = event.data.new_x
     friends[event.data.id].y = event.data.new_y
   else if 'who_is_popular_here' of event.data
-    popular_guys = {}
-    r = 100
+    guys = []
+    r = 150
     x = event.data.x
     y = event.data.y
     z = event.data.zoom
@@ -106,6 +106,28 @@ randomize = (friend) ->
     top    = y - r*z
     bottom = y + r*z
     for id, f of friends when left < f.x < right and top < f.y < bottom
-      popular_guys[id] = 1
-    postMessage({popular_guys: popular_guys})
+      f.distance = Math.sqrt(Math.pow(x - f.x, 2) + Math.pow(y - f.y, 2))
+      if f.distance < r
+        guys.push(f)
+    guys.sort( (a,b) ->
+      a.distance - b.distance
+    )
+    popular_guys = {}
+    for friend in guys
+      for id, f of friend.friends when id not of friends
+        if id not of popular_guys
+          popular_guys[id] = 0
+        popular_guys[id] += 100 - friend.distance
+
+    popu = (id for id, f of popular_guys)
+    popu.sort( (a,b) ->
+      popular_guys[b] - popular_guys[a]
+    )
+    popu = popu[0..5]
+    popu2 = {}
+    for id in popu
+      popu2[id] = popular_guys[id]
+
+    guys = (f.id for f in guys)
+    postMessage({guys: guys, popular_guys: popu2})
       

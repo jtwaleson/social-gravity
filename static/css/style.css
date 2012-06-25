@@ -39,6 +39,8 @@ ul#menu li button#add-protagonist {
 }
 .friend {
     width: 80px;
+    margin-left: -40px;
+    margin-top: -35px;
     padding: 4px;
     border-radius: 10px;
     border: 2px solid black;
@@ -64,8 +66,8 @@ ul#menu li button#add-protagonist {
 .friend:hover {
     z-index: 200 !important;
     border-width: 4px;
-    margin-left: -2px;
-    margin-top: -2px;
+    margin-left: -42px;
+    margin-top: -37px;
 }
 .friend.followed.follows {
     background-color: purple !important;
@@ -92,8 +94,8 @@ body .friend.highlight.follows.followed {
     box-shadow: 0 0 70px black;
     color: white;
     border: 4px solid white;
-    margin-left: -2px;
-    margin-top: -2px;
+    margin-left: -42px;
+    margin-top: -37px;
 }
 #menu button.active {
     background-color: red;
@@ -131,10 +133,28 @@ body .friend.highlight.follows.followed {
     box-shadow: 0 0 150px red;
     background-color: red;
 }
-#who_to_follow {
+#words_wrapper {
+    position: absolute;
+    top: -50px;
+    left: -280px;
+}
+#who_to_follow_wrapper {
     position: absolute;
     top: -50px;
     left: 130px;
+}
+#spyglass_glow ul {
+    list-style-type: none;
+    width: 150px;
+}
+#spyglass_glow li {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 3px;
+    margin: 4px;
+    padding: 4px;
+    text-align: center;
+    font-weight: bold;
 }
 #menu button:hover {
     background-color: #999;

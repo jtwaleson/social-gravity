@@ -1,5 +1,8 @@
 class Downloader
   constructor: ->
+    @tried = {}
+    no_more_twitter = no
+    no_more_pipes = no
   
   _cache: (cacheUrl, success, error) ->
     $.ajax(
@@ -16,17 +19,25 @@ class Downloader
     )
 
   _twitter: (twitterUrl, success, error) ->
+    if downloader.no_more_twitter
+      error()
+      return
     $.ajax(
       type: 'POST'
       url: twitterUrl
       dataType: "jsonp"
       success: (r,a,xhr) ->
         success(r)
-      timeout: 5000
-      error: error
+      timeout: 2000
+      error: ->
+        downloader.no_more_twitter = yes
+        error()
     )
 
   _pipes: (twitterUrl, success, error) ->
+    if downloader.no_more_pipes
+      error()
+      return
     $.ajax(
       type: 'POST'
       data:
@@ -41,8 +52,9 @@ class Downloader
           r = r['value']['items']
           success(r)
         else
+          downloader.no_more_pipes = yes
           error()
-      timeout: 5000
+      timeout: 4000
       error: error
     )
   _resolve: (cacheUrl, twitterUrl, success, error) ->
@@ -65,6 +77,9 @@ class Downloader
     )
 
   by_user_id: (id, success, error) ->
+    if id of @tried
+      return
+    @tried[id] = 1
     @._resolve(
       '/cache/user/'+id
       'http://api.twitter.com/1/users/lookup.json?user_id='+id,
@@ -99,6 +114,7 @@ class Downloader
       'http://api.twitter.com/1/friends/ids.json?cursor=-1&user_id='+profile['id_str']
       (data) =>
         profile['friends'] = data
+        delete downloader.tried[profile.id]
         $.post(
           '/cache/user/'+profile.id
           data: JSON.stringify(profile)
@@ -108,7 +124,7 @@ class Downloader
     )
 
 $ ->
-  downloader = new Downloader
+  window.downloader = new Downloader
   new Button("@", "Add a new person of interest", "a", "glow", ->
     $(@).removeClass('glow')
     downloader.by_user_name(

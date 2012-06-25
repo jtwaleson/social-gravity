@@ -53,7 +53,9 @@ class Simulation
     @zoom = new Zoom(@)
     @friends = {}
     @gravity_worker = new Worker 'js/gravity_worker.js'
-    @gravity_worker.onmessage = @message_from_worker
+    @gravity_worker.onmessage = @message_from_gravity_worker
+    @words_worker = new Worker 'js/words_worker.js'
+    @words_worker.onmessage = @message_from_words_worker
     @running = no
     @button = new Button("&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
@@ -61,15 +63,26 @@ class Simulation
     new Button("&Psi;", "Randomize", "r",  "", =>
       @randomize_positions()
     )
-  message_from_worker: (event) =>
+  message_from_words_worker: (event) ->
+    div = $("#words").empty()
+    for w in event.data
+      $("<li>").text(w.word).appendTo(div)
+  message_from_gravity_worker: (event) =>
     if 'console' of event.data
       console.log(event.data.console)
       return
     if 'popular_guys' of event.data
       div = $("#who_to_follow")
       div.empty()
-      for id, amount of event.data.popular_guys
-        $("<p>").text(@friends[id].name).appendTo(div)
+      for id in event.data.guys
+        $("<li>").text(@friends[id].name).appendTo(div)
+#      for id, score of event.data.popular_guys
+#        downloader.by_user_id(id, (data) ->
+#            console.log(data.screen_name + " -> " + score)
+#          , (message) ->
+#            alert(message)
+#        )
+      @words_worker.postMessage({friends: event.data.guys})
     else
       for d in event.data
         friend = @friends[d.id]
@@ -85,6 +98,7 @@ class Simulation
   register: (friend) ->
     @friends[friend.id] = friend
     @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})
+    @words_worker.postMessage({new_friend: friend.id, strings: friend.get_strings()})
     friend.set_zoom(@zoom)
   start: ->
     @gravity_worker.postMessage({start: yes})
