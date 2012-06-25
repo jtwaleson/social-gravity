@@ -1,147 +1,153 @@
 class Downloader
   constructor: ->
-    @tried = {}
-    no_more_twitter = no
-    no_more_pipes = no
-  
-  _cache: (cacheUrl, success, error) ->
-    $.ajax(
-      url: cacheUrl
-      dataType: 'json'
-      type: 'GET'
-      error: (xhr, textstatus, errorthrown) ->
-        if xhr.status == 404
-          error()
-        else
-          alert("Server cache error")
-      success: (result, a, xhr) ->
-        success(result)
-    )
+    @no_more_twitter = no
+    @no_more_pipes = no
 
-  _twitter: (twitterUrl, success, error) ->
-    if downloader.no_more_twitter
-      error()
-      return
-    $.ajax(
-      type: 'POST'
-      url: twitterUrl
-      dataType: "jsonp"
-      success: (r,a,xhr) ->
-        success(r)
-      timeout: 2000
-      error: ->
-        downloader.no_more_twitter = yes
-        error()
-    )
+    @counter = $("<div>").appendTo("body").attr("id", "download_counter")
 
-  _pipes: (twitterUrl, success, error) ->
-    if downloader.no_more_pipes
-      error()
-      return
-    $.ajax(
-      type: 'POST'
-      data:
-        _id: '81263ca2954c525a92e8ebe02b9c5a82'
-        _render: 'json'
-        url: twitterUrl
-      url: 'http://pipes.yahoo.com/pipes/pipe.run'
-      dataType: "jsonp"
-      jsonp: "_callback"
-      success: (r,a,xhr) ->
-        if r['count'] > 0
-          r = r['value']['items']
-          success(r)
-        else
-          downloader.no_more_pipes = yes
-          error()
-      timeout: 4000
-      error: error
-    )
-  _resolve: (cacheUrl, twitterUrl, success, error) ->
-    @._cache(cacheUrl, success, => @._resolve_without_cache(twitterUrl, success, error))
-    
-  _resolve_without_cache: (twitterUrl, success, error) ->
-    @._twitter(twitterUrl, success, => @._pipes(twitterUrl, success, error))
-
-  by_user_name: (username, success, error) ->
-    @._resolve(
-      '/cache/userbyname/'+username.toLowerCase()
-      'http://api.twitter.com/1/users/lookup.json?screen_name='+username,
-      (data) =>
-        if data[0]['protected'] == no or data[0]['protected'] == 'false'
-          @.find_user(data, success, error)
-        else
-          error('Protected account, impossibru')
-      =>
-        error('Could not resolve')
-    )
-
-  by_user_id: (id, success, error) ->
-    if id of @tried
-      return
-    @tried[id] = 1
-    @._resolve(
-      '/cache/user/'+id
-      'http://api.twitter.com/1/users/lookup.json?user_id='+id,
-      (data) =>
-        @.find_user(data, success, error)
-      =>
-        error('Could not resolve')
-    )
-
-  find_user: (data, success, error) ->
-    if data.length == 1
-      data = data[0]
-      if 'friends' of data
-        success(data)
-      else if data['protected'] is no or data['protected'] is 'false'
-        @.find_friends(
-          data
-          success
-          =>
-            error('User found, but could not find friends')
-        )
+    try_cache = (task, callback) =>
+      if task.name?
+        url = "/cache/userbyname/#{ task.name.toLowerCase() }"
       else
-        data.friends = []
-        $.post(
-          '/cache/user/'+data.id
-          data: JSON.stringify(data)
-        )
-        success(data)
+        url = "/cache/user/#{ task.id }"
+       
+      $.ajax(
+        url: url
+        dataType: 'json'
+        type: 'GET'
+        error: (xhr, textstatus, errorthrown) ->
+          if xhr.status == 404
+            callback null, null
+          else
+            console.log("Server cache does not respond. This is bad...")
+            callback null, null
+        success: (result, a, xhr) -> callback result[0]
+      )
+    try_twitter = (object, get_friends, task, callback) =>
+      if @no_more_twitter
+        return callback null, object
+      base_url = 'http://api.twitter.com/1'
+      if get_friends
+        if not object.id?
+          return callback null, 'Should not look get friends without user id'
+        task.twitter_url = "#{ base_url }/friends/ids.json?cursor=-1&user_id=#{ object.id }"
+      else if task.name?
+        task.twitter_url = "#{ base_url }/users/lookup.json?screen_name=#{ task.name.toLowerCase() }"
+      else
+        task.twitter_url = "#{ base_url }/users/lookup.json?user_id=#{ task.id }"
 
-  find_friends: (profile, success, error) ->
-    @._resolve_without_cache(
-      'http://api.twitter.com/1/friends/ids.json?cursor=-1&user_id='+profile['id_str']
-      (data) =>
-        profile['friends'] = data
-        delete downloader.tried[profile.id]
-        $.post(
-          '/cache/user/'+profile.id
-          data: JSON.stringify(profile)
+      $.ajax(
+        type: 'POST'
+        url: task.twitter_url
+        dataType: "jsonp"
+        success: (r,a,xhr) ->
+          if get_friends
+            #TODO STORE IN CACHE!!!!
+            object.friends = r
+            callback object, null
+          else
+            callback null, r[0]
+        timeout: 2000
+        error: =>
+          @no_more_twitter = yes
+          callback null, object
+      )
+
+    try_pipes = (object, get_friends, task, callback) =>
+      if @no_more_pipes
+        return callback null, object
+      $.ajax(
+        type: 'POST'
+        data:
+          _id: '81263ca2954c525a92e8ebe02b9c5a82'
+          _render: 'json'
+          url: task.twitter_url
+        url: 'http://pipes.yahoo.com/pipes/pipe.run'
+        dataType: "jsonp"
+        jsonp: "_callback"
+        success: (r,a,xhr) ->
+          if r['count'] > 0
+            r = r['value']['items']
+            if get_friends
+              #TODO STORE IN CACHE!!!!
+              object.friends = r
+              return callback object, null
+            else
+              return callback null, r[0]
+          callback null, object
+        timeout: 4000
+        error: =>
+          @no_more_pipes = yes
+          callback null, object
+          
+      )
+      callback null, object
+
+    #misusing the waterfall, we swap error and result. 
+      # once the result is in, we throw an "error" to skip the rest. 
+    @q = async.queue(
+      (task, callback) ->
+        setTimeout(
+          ->
+            async.waterfall(
+              [
+                (callback)         -> try_cache                     task, callback
+                (object, callback) -> try_twitter           object, no,   task, callback
+                (object, callback) -> try_pipes             object, no,   task, callback
+                (object, callback) -> try_twitter           object, yes,  task, callback
+                (object, callback) -> try_pipes             object, yes,  task, callback
+                (object, callback) -> callback              null, "Could not complete result"
+              ]
+              (result, error) ->
+                downloader.counter.text(downloader.q.length())
+                if error?
+                  callback {error: error}
+                else
+                  callback {result: result}
+            )
+          2000
         )
-        success(profile)
-      error
+      1
     )
-
+#        $.post(
+#          '/cache/user/'+profile.id
+#          data: JSON.stringify(profile)
+#        )
+  add_protagonist: (name) =>
+    downloader.q.push(
+      {name: "jtwaleson"}
+      (result) =>
+        if result.error?
+          console.log("Could not retrieve protagonist #{ result.error }")
+        else
+          friend = new Friend(result.result)
+          for id of friend.friends
+            @add_friend id
+    )
+  add_friend: (id) =>
+    downloader.q.push(
+      {id: id}
+      (result) =>
+        if result.error?
+          console.log("Sorry, friend #{ id } could not be retrieved")
+        else
+          new Friend(result.result)
+    )
+      
 $ ->
   window.downloader = new Downloader
   new Button("@", "Add a new person of interest", "a", "glow", ->
     $(@).removeClass('glow')
-    downloader.by_user_name(
-      'jtwaleson'
-      (data) =>
-        if data.id not of simulation.friends
-          friend = new Friend(data)
-        for id in data.friends[0].ids when id not of simulation.friends
-          do (id) ->
-            downloader.by_user_id(
-              id
-              (data) =>
-                new Friend(data)
-              (message) =>
-                alert(message)
-            )
-      (message) =>
-        alert(message)
-    )
+    downloader.add_protagonist('jtwaleson')
   )
+#        for id in data.friends[0].ids when id not of simulation.friends
+#          do (id) ->
+#            downloader.by_user_id(
+#              id
+#              (data) =>
+#                new Friend(data)
+#              (message) =>
+#                alert(message)
+#            )
+#      (message) =>
+#        alert(message)

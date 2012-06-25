@@ -20,8 +20,8 @@ move = (a, b_x, b_y, amount, proportional=no) ->
 
   if proportional
     if d < dst*dst
-      if d < dst
-        d = halfdst
+#      if d < dst
+#        d = dst
       amount = amount * (halfdst*halfdst) / d
     else
       return

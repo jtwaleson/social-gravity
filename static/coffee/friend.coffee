@@ -2,7 +2,7 @@ class Friend
   constructor: (data) ->
     @data = data
     @friends = {}
-    if data.friends.length == 1
+    if data.friends? and data.friends[0]? and data.friends[0].ids?
       for id in data.friends[0].ids
         @friends[id] = 1
     @id = data.id

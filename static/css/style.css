@@ -165,3 +165,8 @@ body .friend.highlight.follows.followed {
 button {
     transition: background-color 0.5s;
 }
+#download_counter {
+    position: absolute;
+    right: 0;
+    bottom:0;
+}
