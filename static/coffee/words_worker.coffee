@@ -86,34 +86,49 @@ diacritics_removal_map = [
 ]
 
 english = ['the','of','and','to','in','is','be','that','was','he','for','it','with','as','his','on','have','at','by','not','they','this','had','are','but','from','or','she','an','which','you','one','we','all','were','her','would','there','their','will','when','who','him','been','has','more','if','no','out','do','so','can','what']
-dutch = ['ja','dat','de','en','uh','ik','een','is','die','van','maar','in','niet','je','zijn','ja','dat','de','ik','en','het','uh','een','hebben','die','van','maar','in','niet','de','van','het','een','en','in','is','te','dat','op','De','voor','met','zijn','die','de','van','het','zijn','een','in','en','dat','op','te','worden','voor','met','hebben','die']
-online = ['http','www','co','rt']
-borden_words_list = english.concat(dutch, online)
-borden_words = {}
-for w in borden_words_list
-  borden_words[w] = 1
+dutch = ['ja','dat','de','en','uh','ik','een','is','die','van','maar','in','niet','je','zijn','ja','dat','de','ik','en','het','uh','een','hebben','die','van','maar','in','niet','de','van','het','een','en','in','is','te','dat','op','De','voor','met','zijn','die','de','van','het','zijn','een','in','en','dat','op','te','worden','voor','met','hebben','die','bij','mijn']
+online = ['http','www','co','rt','com']
+boring_words_list = english.concat(dutch, online)
+boring_words = {}
+for w in boring_words_list
+  boring_words[w] = 1
 remove_strange_chars_and_split = (str) ->
   for change in diacritics_removal_map
     str = str.replace(change.letters, change.base)
   str = str.toLowerCase().replace(/[^a-z]/g," ")
-  str = (string for string in str.split(/\s+/) when string.length > 1 and string not of borden_words)
+  str = (string for string in str.split(/\s+/) when string.length > 1 and string not of boring_words)
   a = {}
   for w in str
     a[w] = 1
   k = (w for w, _ of a)
   k
 
+class Friend
+  constructor: (str, friends) ->
+    @words = remove_strange_chars_and_split(str)
+    @friends = friends
+  get_words: ->
+    words = {}
+    for word in @words
+      words[word] = 1
+    for friend in (friends[f] for f,_ of @friends when f of friends)
+      for word in friend.words
+        if word not of words
+          words[word] = 0
+        words[word] += 0.5
+    return words
+
 friends = {}
 @onmessage = (event) ->
   if 'new_friend' of event.data
-    friends[event.data.new_friend] = remove_strange_chars_and_split(event.data.strings)
-  if 'friends' of event.data
+    friends[event.data.new_friend] = new Friend(event.data.strings, event.data.friends)
+  else if 'friends' of event.data
     words = {}
     for friend in event.data.friends
-      for word in friends[friend]
+      for word, value of friends[friend].get_words()
         if word not of words
           words[word] = 0
-        words[word] += 1
+        words[word] += value
     w = (word for word, score of words when score > 1)
     w.sort( (a,b) =>
       words[b] - words[a]
