@@ -42,11 +42,6 @@ class Zoom
     @x = (x*zoom_before + @x) - x * @zoom
     @y = (y*zoom_before + @y) - y * @zoom
     @simulation.redraw()
-  get_width: ->
-    1000
-  get_height: ->
-    1000
-
 
 class Simulation
   constructor: ->
@@ -63,7 +58,12 @@ class Simulation
     new Button("&Psi;", "Randomize", "r",  "", =>
       @randomize_positions()
     )
+    @box = $("<div>").attr('id', 'box').appendTo("body")
+    @redraw()
   message_from_words_worker: (event) ->
+    if 'console' of event.data
+      console.log(event.data)
+      return
     div = $("#words").empty()
     for w in event.data
       $("<li>").text(w.word).appendTo(div)
@@ -89,17 +89,26 @@ class Simulation
         friend.setX(d.x)
         friend.setY(d.y)
       @redraw()
-      @gravity_worker.postMessage({continue: yes})
+      setTimeout(
+        =>
+          @gravity_worker.postMessage({continue: yes})
+        100
+      )
   randomize_positions: ->
     for id, friend of @friends
       friend.randomize_position()
       @gravity_worker.postMessage({id: friend.id, new_x: friend.x, new_y: friend.y})
     @redraw()
   register: (friend) ->
-    @friends[friend.id] = friend
-    @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})
-    @words_worker.postMessage({new_friend: friend.id, strings: friend.get_strings()})
     friend.set_zoom(@zoom)
+    @friends[friend.id] = friend
+
+    @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})
+    @words_worker.postMessage({new_friend: friend.id, strings: friend.get_strings(), friends: friend.friends})
+
+    for id, f of @friends when f.highlight
+      f.click()
+    friend.click()
   start: ->
     @gravity_worker.postMessage({start: yes})
     @running = yes
@@ -114,6 +123,12 @@ class Simulation
     else
       @start()
   redraw: ->
+    @box
+        .css('top', @zoom.translate_y(0))
+        .css('left', @zoom.translate_x(0))
+        .css('width',  "#{ @zoom.translate_x(1400) - @zoom.translate_x(0)}px")
+        .css('height', "#{@zoom.translate_y(600) - @zoom.translate_y(0)}px")
+
     friend.redraw() for id, friend of @friends
 
     canvas = $("#canvas")[0]
@@ -143,6 +158,29 @@ class Simulation
     @redraw()
   who_is_popular_here: (x,y) =>
     @gravity_worker.postMessage({who_is_popular_here: yes, x: x, y: y, zoom: @zoom.zoom})
+  add_protagonist: (name) =>
+    downloader.q.push(
+      {name: name}
+      (result) =>
+        if result.error?
+          console.log("Could not retrieve protagonist #{ result.error }")
+        else
+          if result.result.id not of @friends
+            friend = new Friend(result.result)
+          for id in result.result.friends[0].ids.reverse()
+            @add_friend id
+    )
+  add_friend: (id) =>
+    if id of @friends
+      return
+    downloader.q.push(
+      {id: id}
+      (result) =>
+        if result.error?
+          console.log("Sorry, friend #{ id } could not be retrieved")
+        else
+          new Friend(result.result)
+    )
 
 class Button
   constructor: (caption, description, keystroke, divclass, func) ->
@@ -155,7 +193,12 @@ class Button
     li = $("<li>")
     li.append(@div)
     li.appendTo $("#menu")
-    shortcut.add(keystroke, => @div.click())
+    shortcut.add(
+      keystroke
+      =>
+        @div.click()
+      {disable_in_input: yes}
+    )
 
 window.Button = Button
 $ ->

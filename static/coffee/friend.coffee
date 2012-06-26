@@ -26,7 +26,6 @@ class Friend
       .appendTo(@div)
            
     simulation.register(@)
-    @redraw()
   get_strings: ->
     s = [@data.description, @data.location]
     if @data.status

@@ -20,11 +20,9 @@ move = (a, b_x, b_y, amount, proportional=no) ->
 
   if proportional
     if d < dst*dst
-#      if d < dst
-#        d = dst
+      if d < dst
+        d = dst
       amount = amount * (halfdst*halfdst) / d
-    else
-      return
       
 
   if dx*dx > dy*dy
@@ -63,8 +61,8 @@ start = ->
         move(friendB, friendA.x, friendA.y, 20)
       else if idA of friendB.friends
         move(friendB, friendA.x, friendA.y, 10)
-#      else
-      move(friendA, friendB.x, friendB.y, -2, yes)
+      else
+        move(friendA, friendB.x, friendB.y, -1, yes)
       
   list = for k,i of friends
     {id: i.id, x: i.x, y:i.y}

@@ -47,7 +47,7 @@ class Downloader
             callback object, null
           else
             callback null, r[0]
-        timeout: 2000
+        timeout: 1000
         error: =>
           @no_more_twitter = yes
           callback null, object
@@ -75,13 +75,11 @@ class Downloader
             else
               return callback null, r[0]
           callback null, object
-        timeout: 4000
+        timeout: 2000
         error: =>
           @no_more_pipes = yes
           callback null, object
-          
       )
-      callback null, object
 
     #misusing the waterfall, we swap error and result. 
       # once the result is in, we throw an "error" to skip the rest. 
@@ -105,7 +103,7 @@ class Downloader
                 else
                   callback {result: result}
             )
-          2000
+          0
         )
       1
     )
@@ -113,32 +111,19 @@ class Downloader
 #          '/cache/user/'+profile.id
 #          data: JSON.stringify(profile)
 #        )
-  add_protagonist: (name) =>
-    downloader.q.push(
-      {name: "jtwaleson"}
-      (result) =>
-        if result.error?
-          console.log("Could not retrieve protagonist #{ result.error }")
-        else
-          friend = new Friend(result.result)
-          for id of friend.friends
-            @add_friend id
-    )
-  add_friend: (id) =>
-    downloader.q.push(
-      {id: id}
-      (result) =>
-        if result.error?
-          console.log("Sorry, friend #{ id } could not be retrieved")
-        else
-          new Friend(result.result)
-    )
-      
 $ ->
   window.downloader = new Downloader
   new Button("@", "Add a new person of interest", "a", "glow", ->
     $(@).removeClass('glow')
-    downloader.add_protagonist('jtwaleson')
+    $("<input>")
+        .addClass("protagonist_adder")
+        .attr("type", "text")
+        .insertAfter(@)
+        .focus()
+        .change( ->
+          simulation.add_protagonist($(@).val())
+          $(@).remove()
+        )
   )
 #        for id in data.friends[0].ids when id not of simulation.friends
 #          do (id) ->

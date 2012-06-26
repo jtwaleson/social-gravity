@@ -170,3 +170,7 @@ button {
     right: 0;
     bottom:0;
 }
+#box {
+    position: absolute;
+    border: 1px solid #888;
+}
