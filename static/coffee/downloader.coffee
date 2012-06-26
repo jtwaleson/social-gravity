@@ -42,8 +42,11 @@ class Downloader
         dataType: "jsonp"
         success: (r,a,xhr) ->
           if get_friends
-            #TODO STORE IN CACHE!!!!
             object.friends = r
+            $.post(
+              '/cache/user/'+object.id
+              data: JSON.stringify(object)
+            )
             callback object, null
           else
             callback null, r[0]
@@ -69,8 +72,11 @@ class Downloader
           if r['count'] > 0
             r = r['value']['items']
             if get_friends
-              #TODO STORE IN CACHE!!!!
               object.friends = r
+              $.post(
+                '/cache/user/'+object.id
+                data: JSON.stringify(object)
+              )
               return callback object, null
             else
               return callback null, r[0]
@@ -103,14 +109,10 @@ class Downloader
                 else
                   callback {result: result}
             )
-          0
+          100
         )
       1
     )
-#        $.post(
-#          '/cache/user/'+profile.id
-#          data: JSON.stringify(profile)
-#        )
 $ ->
   window.downloader = new Downloader
   new Button("@", "Add a new person of interest", "a", "glow", ->
@@ -121,7 +123,13 @@ $ ->
         .insertAfter(@)
         .focus()
         .change( ->
-          simulation.add_protagonist($(@).val())
+          if /[^a-z_]/g.test($(@).val().toLowerCase())
+            alert('Not a valid twitter handle. Use letters and underscores only.')
+          else
+            simulation.add_protagonist($(@).val())
+            $(@).remove()
+        )
+        .blur( ->
           $(@).remove()
         )
   )

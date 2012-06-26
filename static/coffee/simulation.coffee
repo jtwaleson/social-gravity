@@ -126,8 +126,8 @@ class Simulation
     @box
         .css('top', @zoom.translate_y(0))
         .css('left', @zoom.translate_x(0))
-        .css('width',  "#{ @zoom.translate_x(1400) - @zoom.translate_x(0)}px")
-        .css('height', "#{@zoom.translate_y(600) - @zoom.translate_y(0)}px")
+        .css('width',  "#{ @zoom.translate_x($("body").width()) - @zoom.translate_x(0)}px")
+        .css('height', "#{@zoom.translate_y($("body").height()) - @zoom.translate_y(0)}px")
 
     friend.redraw() for id, friend of @friends
 
@@ -159,11 +159,13 @@ class Simulation
   who_is_popular_here: (x,y) =>
     @gravity_worker.postMessage({who_is_popular_here: yes, x: x, y: y, zoom: @zoom.zoom})
   add_protagonist: (name) =>
+    downloader.no_more_twitter = no
+    downloader.no_more_pipes = no
     downloader.q.push(
       {name: name}
       (result) =>
         if result.error?
-          console.log("Could not retrieve protagonist #{ result.error }")
+          alert("Could not retrieve @#{ name }. Either the user doesn't exist or you are being rate limited.")
         else
           if result.result.id not of @friends
             friend = new Friend(result.result)

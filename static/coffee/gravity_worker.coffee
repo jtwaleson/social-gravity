@@ -15,7 +15,7 @@ move = (a, b_x, b_y, amount, proportional=no) ->
     dy = 0.001
   
   d = dx*dx + dy*dy
-  dst = 400
+  dst = 200
   halfdst = dst/2
 
   if proportional
@@ -23,6 +23,11 @@ move = (a, b_x, b_y, amount, proportional=no) ->
       if d < dst
         d = dst
       amount = amount * (halfdst*halfdst) / d
+    else
+      return
+  else
+    if d < (dst*dst) / 2
+      return
       
 
   if dx*dx > dy*dy
@@ -58,9 +63,9 @@ start = ->
 #    move(friendA, center_x, center_y, 1)
     for idB, friendB of friends
       if idA of friendB.friends and idB of friendA.friends
-        move(friendB, friendA.x, friendA.y, 20)
-      else if idA of friendB.friends
         move(friendB, friendA.x, friendA.y, 10)
+      else if idA of friendB.friends
+        move(friendB, friendA.x, friendA.y, 5)
       else
         move(friendA, friendB.x, friendB.y, -1, yes)
       
@@ -94,18 +99,18 @@ randomize = (friend) ->
     friends[event.data.id].x = event.data.new_x
     friends[event.data.id].y = event.data.new_y
   else if 'who_is_popular_here' of event.data
+    max_distance = 50
     guys = []
-    r = 150
+    r = max_distance * event.data.zoom
     x = event.data.x
     y = event.data.y
-    z = event.data.zoom
-    left   = x - r*z
-    right  = x + r*z
-    top    = y - r*z
-    bottom = y + r*z
+    left   = x - r
+    right  = x + r
+    top    = y - r
+    bottom = y + r
     for id, f of friends when left < f.x < right and top < f.y < bottom
-      f.distance = Math.sqrt(Math.pow(x - f.x, 2) + Math.pow(y - f.y, 2))
-      if f.distance < r
+      f.distance = (x - f.x) * (x - f.x) + (y - f.y) * (y - f.y)
+      if f.distance < r*r
         guys.push(f)
     guys.sort( (a,b) ->
       a.distance - b.distance
@@ -115,7 +120,7 @@ randomize = (friend) ->
       for id, f of friend.friends when id not of friends
         if id not of popular_guys
           popular_guys[id] = 0
-        popular_guys[id] += 100 - friend.distance
+        popular_guys[id] += max_distance*max_distance - friend.distance
 
     popu = (id for id, f of popular_guys)
     popu.sort( (a,b) ->

@@ -115,7 +115,7 @@ class Friend
       for word in friend.words
         if word not of words
           words[word] = 0
-        words[word] += 0.5
+        words[word] += 0.05
     return words
 
 friends = {}
