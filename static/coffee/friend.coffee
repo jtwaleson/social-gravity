@@ -2,8 +2,8 @@ class Friend
   constructor: (data) ->
     @data = data
     @friends = {}
-    if data.friends? and data.friends[0]? and data.friends[0].ids?
-      for id in data.friends[0].ids
+    if data.friends? and data.friends? and data.friends.ids?
+      for id in data.friends.ids
         @friends[id] = 1
     @id = data.id
     @highlight = no

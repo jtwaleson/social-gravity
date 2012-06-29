@@ -23,12 +23,22 @@ class Downloader
             callback null, null
         success: (result, a, xhr) -> callback result[0]
       )
+
     try_twitter = (object, get_friends, task, callback) =>
+      if get_friends and object? and (object.protected is 'true' or object.protected is true)
+        object.friends = []
+        $.post(
+          '/cache/user/'+object.id
+          data: JSON.stringify(object)
+        )
+        return callback object, null
       if @no_more_twitter
         return callback null, object
       base_url = 'http://api.twitter.com/1'
       if get_friends
-        if not object.id?
+        if not (object? and object.id?)
+          console.log(task)
+          console.log(object)
           return callback null, 'Should not look get friends without user id'
         task.twitter_url = "#{ base_url }/friends/ids.json?cursor=-1&user_id=#{ object.id }"
       else if task.name?
@@ -59,7 +69,7 @@ class Downloader
     try_pipes = (object, get_friends, task, callback) =>
       if @no_more_pipes
         return callback null, object
-      $.ajax(
+      $.ajax({
         type: 'POST'
         data:
           _id: '81263ca2954c525a92e8ebe02b9c5a82'
@@ -80,12 +90,13 @@ class Downloader
               return callback object, null
             else
               return callback null, r[0]
-          callback null, object
+          else
+            callback null, object
         timeout: 2000
         error: =>
           @no_more_pipes = yes
           callback null, object
-      )
+      })
 
     #misusing the waterfall, we swap error and result. 
       # once the result is in, we throw an "error" to skip the rest. 
@@ -97,9 +108,9 @@ class Downloader
               [
                 (callback)         -> try_cache                     task, callback
                 (object, callback) -> try_twitter           object, no,   task, callback
-                (object, callback) -> try_pipes             object, no,   task, callback
+#                (object, callback) -> try_pipes             object, no,   task, callback
                 (object, callback) -> try_twitter           object, yes,  task, callback
-                (object, callback) -> try_pipes             object, yes,  task, callback
+#                (object, callback) -> try_pipes             object, yes,  task, callback
                 (object, callback) -> callback              null, "Could not complete result"
               ]
               (result, error) ->
@@ -109,7 +120,7 @@ class Downloader
                 else
                   callback {result: result}
             )
-          100
+          10
         )
       1
     )

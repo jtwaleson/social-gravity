@@ -169,7 +169,7 @@ class Simulation
         else
           if result.result.id not of @friends
             friend = new Friend(result.result)
-          for id in result.result.friends[0].ids.reverse()
+          for id in result.result.friends.ids.reverse()
             @add_friend id
     )
   add_friend: (id) =>
