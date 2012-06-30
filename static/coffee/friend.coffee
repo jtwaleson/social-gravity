@@ -72,8 +72,11 @@ class Friend
     @div.toggleClass('highlight')
     simulation.redraw_lines()
   
-  dblclick: ->
-    @div.css('background-color', 'red')
+  dblclick: =>
+    if confirm "Would you like to add the friends of @#{ @data.screen_name }?"
+      if confirm "Clear the current field?"
+        simulation.clear()
+      simulation.add_protagonist(@data.screen_name)
   setX: (x) ->
     @x = x
   setY: (y) ->
