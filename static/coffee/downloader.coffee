@@ -3,6 +3,7 @@ class Downloader
     @no_more_twitter_count = 0
     @no_more_twitter = no
     @no_more_pipes = no
+    @failed_downloads = 0
 
     @counter = $("<div>").appendTo("body").attr("id", "download_counter")
 
@@ -129,6 +130,18 @@ class Downloader
         )
       1
     )
+    @q.drain = =>
+      setTimeout(
+        =>
+          for id, friend of simulation.friends when friend.highlight
+            friend.click()
+          if @failed_downloads > 0
+            error_report = " However, we failed to load #{ @failed_downloads } friends, probably due to twitter rate limiting. Come back in one hour to load more users."
+          else
+            error_report = ""
+          alert "Done loading users.#{ error_report }"
+        1000
+      )
 $ ->
   window.downloader = new Downloader
   new Button("@", "Add a new person of interest", "a", "glow", ->

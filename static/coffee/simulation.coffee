@@ -136,13 +136,13 @@ class Simulation
     if @friends_loaded()
       @gravity_worker.postMessage({start: yes})
       @running = yes
-      $(@button.div).html('&#x25a0;')
+      @button.div.html('&#x25a0;').addClass('active')
     else
       alert "There are no users in the field. Load some users first."
 
   stop: ->
     @running = no
-    $(@button.div).html('&#x25b6;')
+    @button.div.html('&#x25b6;').removeClass('active')
   toggle: ->
     if @running
       @stop()
@@ -188,6 +188,7 @@ class Simulation
     downloader.no_more_twitter = no
     downloader.no_more_twitter_count = 0
     downloader.no_more_pipes = no
+    downloader.failed_downloads = 0
     downloader.q.push(
       {name: name}
       (result) =>
@@ -208,7 +209,7 @@ class Simulation
       {id: id}
       (result) =>
         if result.error?
-          console.log("Sorry, friend #{ id } could not be retrieved")
+          downloader.failed_downloads += 1
         else
           new Friend(result.result)
     )
