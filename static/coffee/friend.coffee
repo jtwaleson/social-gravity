@@ -84,15 +84,16 @@ class Friend
 #    pos.top += @div.outerHeight()/2
 
     for friend in @lines_to
-      otherpos = friend.div.position()
+      otherdiv = friend.div
+      otherpos = otherdiv.position()
 #      otherpos.left += friend.div.outerWidth()/2
 #      otherpos.top += friend.div.outerHeight()/2
       dx = pos.left - otherpos.left
       dy = pos.top - otherpos.top
-      line_len = Math.sqrt(dx*dx+dy*dy) - friend.div.width()/1.8
+#      line_len = Math.sqrt(dx*dx+dy*dy) - friend.div.width()/1.8
       angle = Math.atan2(dx, dy)
-      new_x = pos.left - line_len * Math.sin(angle)
-      new_y = pos.top - line_len * Math.cos(angle)
+      new_x = otherpos.left + otherdiv.outerWidth()/1.8 * Math.sin(angle)
+      new_y = otherpos.top + otherdiv.outerHeight()/1.8 * Math.cos(angle)
       old_x = pos.left - @div.outerWidth()/1.8 * Math.sin(angle)
       old_y = pos.top - @div.outerHeight()/1.8 * Math.cos(angle)
       ctx.moveTo(old_x, old_y)
