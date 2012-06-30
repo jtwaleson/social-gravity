@@ -94,11 +94,12 @@ class Simulation
         friend.setX(d.x)
         friend.setY(d.y)
       @redraw()
-      setTimeout(
-        =>
-          @gravity_worker.postMessage({continue: yes})
-        100
-      )
+      if @running
+        setTimeout(
+          =>
+            @gravity_worker.postMessage({continue: yes})
+          100
+        )
 
   randomize_positions: ->
     for id, friend of @friends
@@ -140,7 +141,6 @@ class Simulation
       alert "There are no users in the field. Load some users first."
 
   stop: ->
-    @gravity_worker.postMessage({stop: yes})
     @running = no
     $(@button.div).html('&#x25b6;')
   toggle: ->
