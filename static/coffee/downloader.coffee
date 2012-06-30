@@ -140,6 +140,10 @@ class Downloader
           else
             error_report = ""
           alert "Done loading users.#{ error_report }"
+          @failed_downloads = 0
+          @no_more_twitter = no
+          @no_more_twitter_count = 0
+          @no_more_pipes = no
         1000
       )
 $ ->

@@ -185,10 +185,6 @@ class Simulation
   who_is_popular_here: (x,y) =>
     @gravity_worker.postMessage({who_is_popular_here: yes, x: x, y: y, zoom: @zoom.zoom})
   add_protagonist: (name) =>
-    downloader.no_more_twitter = no
-    downloader.no_more_twitter_count = 0
-    downloader.no_more_pipes = no
-    downloader.failed_downloads = 0
     downloader.q.push(
       {name: name}
       (result) =>
