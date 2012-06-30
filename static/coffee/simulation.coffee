@@ -169,6 +169,8 @@ class Simulation
       (result) =>
         if result.error?
           alert("Could not retrieve @#{ name }. Either the user doesn't exist or you are being rate limited.")
+        else if result.result.protected
+          alert("This user has a protected account. We can not see his/her friends")
         else
           if result.result.id not of @friends
             friend = new Friend(result.result)
@@ -206,6 +208,7 @@ class Button
     )
 
 window.Button = Button
+
 $ ->
   window.simulation = new Simulation
   $('body').mousewheel( (e, delta) ->
