@@ -66,7 +66,7 @@ class Downloader
             f = r[0]
             f.protected = not (f.protected == 'false' or f.protected == no)
             callback null, f
-        timeout: 1000
+        timeout: 4000
         error: =>
           @no_more_twitter_count += 1
           callback null, object
