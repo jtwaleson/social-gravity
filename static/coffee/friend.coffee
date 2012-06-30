@@ -12,6 +12,7 @@ class Friend
     @name = data.screen_name
     @randomize_position()
     @hostage = no
+    @locked = no
     @div = $("<div>")
           .addClass('friend')
           .appendTo("body")
@@ -23,10 +24,27 @@ class Friend
             start: (event, ui) =>
               @hostage = yes
               event.stopPropagation()
-            drag: (event, ui) ->
+              ui.helper.bind(
+                "click.prevent"
+                (event) ->
+                  event.preventDefault()
+              )
+            drag: (event, ui) =>
               event.stopPropagation()
-            stop: (event, ui) ->
+              console.log("x: #{ ui.offset.left }, y: #{ ui.offset.top }")
+              simulation.force_position({
+                id: @id
+                x: @zoom.translate_x_back(ui.offset.left)
+                y: @zoom.translate_y_back(ui.offset.top)
+              })
+            stop: (event, ui) =>
+              @hostage = no
               event.stopPropagation()
+              setTimeout(
+                ->
+                  ui.helper.unbind("click.prevent")
+                300
+              )
           })
 
     if @protected
@@ -34,6 +52,7 @@ class Friend
     $("<img>")
       .attr('src', data.profile_image_url)
       .appendTo(@div)
+      .bind('dragstart', (event) -> event.preventDefault() )
     $("<div>")
       .text(data.name)
       .addClass("name")
@@ -96,5 +115,4 @@ class Friend
   set_zoom: (zoom) ->
     @zoom = zoom
 
-  
 window.Friend = Friend

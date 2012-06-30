@@ -99,6 +99,8 @@ class Simulation
       friend.randomize_position()
       @gravity_worker.postMessage({id: friend.id, new_x: friend.x, new_y: friend.y})
     @redraw()
+  force_position: (f) ->
+    @gravity_worker.postMessage({id: f.id, force_x: f.x, force_y: f.y})
   register: (friend) ->
     friend.set_zoom(@zoom)
     @friends[friend.id] = friend
