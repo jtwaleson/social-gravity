@@ -55,11 +55,15 @@ class Simulation
     @button = new Button("&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
     )
-    new Button("&Psi;", "Randomize", "r",  "", =>
+    new Button("&#x2743;", "Randomize", "r",  "", =>
       @randomize_positions()
+    )
+    new Button("&#x2205;", "Clear", "c",  "", =>
+      @clear()
     )
     @box = $("<div>").attr('id', 'box').appendTo("body")
     @redraw()
+
   message_from_words_worker: (event) ->
     if 'console' of event.data
       console.log(event.data)
@@ -67,6 +71,7 @@ class Simulation
     div = $("#words").empty()
     for w in event.data
       $("<li>").text(w.word).appendTo(div)
+
   message_from_gravity_worker: (event) =>
     if 'console' of event.data
       console.log(event.data.console)
@@ -94,11 +99,21 @@ class Simulation
           @gravity_worker.postMessage({continue: yes})
         100
       )
+
   randomize_positions: ->
     for id, friend of @friends
       friend.randomize_position()
       @gravity_worker.postMessage({id: friend.id, new_x: friend.x, new_y: friend.y})
     @redraw()
+
+  clear: ->
+    @stop()
+    @gravity_worker.postMessage({'clear': yes})
+    for id, friend of @friends
+      friend.div.remove()
+    @friends = {}
+    @redraw()
+
   force_position: (f) ->
     @gravity_worker.postMessage({id: f.id, force_x: f.x, force_y: f.y})
   register: (friend) ->

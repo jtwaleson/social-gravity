@@ -87,6 +87,8 @@ randomize = (friend) ->
 
   if 'new_friend' of event.data
     friends[event.data.new_friend] = {x: event.data.x, y: event.data.y, id: event.data.new_friend, friends: event.data.friends}
+  else if 'clear' of event.data
+    friends = {}
   else if 'continue' of event.data
     start()
   else if 'force_x' of event.data
