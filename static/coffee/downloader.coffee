@@ -22,7 +22,10 @@ class Downloader
           else
             console.log("Server cache does not respond. This is bad...")
             callback null, null
-        success: (result, a, xhr) -> callback result[0]
+        success: (result, a, xhr) ->
+          f = result[0]
+          f.protected = not (f.protected == 'false' or f.protected == no)
+          callback f
       )
 
     try_twitter = (object, get_friends, task, callback) =>
@@ -38,8 +41,6 @@ class Downloader
       base_url = 'http://api.twitter.com/1'
       if get_friends
         if not (object? and object.id?)
-          console.log(task)
-          console.log(object)
           return callback null, 'Should not look get friends without user id'
         task.twitter_url = "#{ base_url }/friends/ids.json?cursor=-1&user_id=#{ object.id }"
       else if task.name?
@@ -61,7 +62,9 @@ class Downloader
             )
             callback object, null
           else
-            callback null, r[0]
+            f = r[0]
+            f.protected = not (f.protected == 'false' or f.protected == no)
+            callback null, f
         timeout: 1000
         error: =>
           @no_more_twitter_count += 1

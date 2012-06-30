@@ -8,6 +8,7 @@ class Friend
     @id = data.id
     @highlight = no
     @lines_to = []
+    @protected = data.protected
     @name = data.screen_name
     @randomize_position()
     @div = $("<div>")
@@ -17,6 +18,8 @@ class Friend
           .bind('click', (event) => @click())
           .bind('dblclick', (event) => @dblclick())
           .attr('title', "@" + data.screen_name + " - " + data.description)
+    if @protected
+      @div.addClass 'protected'
     $("<img>")
       .attr('src', data.profile_image_url)
       .appendTo(@div)

@@ -70,6 +70,11 @@ ul#menu li button#add-protagonist {
     cursor: pointer;
     overflow: hidden;
 }
+.friend.protected {
+    background-image: url(lock.png);
+    background-position: 72px 5px;
+    background-repeat: no-repeat;
+}
 .friend:hover img {
     opacity: 1;
 }
