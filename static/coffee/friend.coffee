@@ -31,7 +31,6 @@ class Friend
               )
             drag: (event, ui) =>
               event.stopPropagation()
-              console.log("x: #{ ui.offset.left }, y: #{ ui.offset.top }")
               simulation.force_position({
                 id: @id
                 x: @zoom.translate_x_back(ui.offset.left)

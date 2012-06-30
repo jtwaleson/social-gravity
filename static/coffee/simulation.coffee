@@ -126,10 +126,19 @@ class Simulation
     for id, f of @friends when f.highlight
       f.click()
     friend.click()
+
+  friends_loaded: ->
+    for id, friends of @friends
+      return yes
+    return no
   start: ->
-    @gravity_worker.postMessage({start: yes})
-    @running = yes
-    $(@button.div).html('&#x25a0;')
+    if @friends_loaded()
+      @gravity_worker.postMessage({start: yes})
+      @running = yes
+      $(@button.div).html('&#x25a0;')
+    else
+      alert "There are no users in the field. Load some users first."
+
   stop: ->
     @gravity_worker.postMessage({stop: yes})
     @running = no
