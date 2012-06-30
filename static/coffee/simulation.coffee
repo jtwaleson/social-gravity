@@ -211,3 +211,5 @@ $ ->
   $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)
   )
+  if !window.Worker
+    alert('Sorry, your browser does not support web workers. Try more recent versions of Chrome, Firefox, Opera or Safari')
