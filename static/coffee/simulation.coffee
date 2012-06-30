@@ -61,6 +61,33 @@ class Simulation
     new Button("&#x2205;", "Clear", "c",  "", =>
       @clear()
     )
+    new Button("&#x2222;", "Find users in the field", "f",  "", ->
+      $("<input>")
+          .addClass("person-finder")
+          .attr("type", "text")
+          .insertAfter(@)
+          .focus()
+          .change( ->
+          )
+          .keyup( (event) ->
+            $(".searching").removeClass('searching')
+            if event.keyCode == 27
+              $(@).remove()
+            val = $(@).val().toLowerCase()
+            if val.length > 0
+              for id, friend of simulation.friends
+                s = friend.data.screen_name
+                n = friend.data.name
+                n = if n? then n.toLowerCase() else ''
+                s = if s? then s.toLowerCase() else ''
+                if s.indexOf(val) >= 0 or n.indexOf(val) >= 0
+                  friend.div.addClass('searching')
+          )
+          .blur( ->
+            $(@).remove()
+            $(".searching").removeClass('searching')
+          )
+    )
     @box = $("<div>").attr('id', 'box').appendTo("body")
     @redraw()
 

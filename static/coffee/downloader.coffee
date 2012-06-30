@@ -162,6 +162,10 @@ $ ->
             simulation.add_protagonist($(@).val())
             $(@).remove()
         )
+        .keyup( (event) ->
+          if event.keyCode == 27
+            $(@).remove()
+        )
         .blur( ->
           $(@).remove()
         )

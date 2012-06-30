@@ -70,6 +70,16 @@ ul#menu li button#add-protagonist {
     cursor: pointer;
     overflow: hidden;
 }
+.friend.searching {
+    z-index: 600 !important;
+    border-color: red;
+    opacity: 1 !important;
+    box-shadow: 0 0 70px red;
+    border-width: 4px;
+    margin-left: -42px;
+    margin-top: -37px;
+    background-color: red;
+}
 .friend.protected {
     background-image: url(lock.png);
     background-position: 72px 5px;
@@ -188,6 +198,17 @@ button {
 #box {
     position: absolute;
     border: 1px solid #888;
+}
+input.person-finder:focus {
+    outline: none;
+}
+input.person-finder {
+    border: none;
+    border-radius: 10px;
+    background-color: white;
+    padding: 4px;
+    font-size: 1em;
+    margin-left: 0.5em;
 }
 input.protagonist_adder:focus {
     outline: none;
