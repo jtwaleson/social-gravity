@@ -33,7 +33,7 @@ class Zoom
     (x - @x)/@zoom
   translate_y: (y) ->
     (y - @y)/@zoom
-  do_zoom: (delta, x = @.get_width() / 2, y = @.get_height() / 2) ->
+  do_zoom: (delta, x = $("body").width() / 2, y = $("body").height() / 2) ->
     zoom_before = @zoom
     if delta < 0
       @zoom = @zoom * factor
@@ -41,6 +41,11 @@ class Zoom
       @zoom = @zoom / factor
     @x = (x*zoom_before + @x) - x * @zoom
     @y = (y*zoom_before + @y) - y * @zoom
+    @simulation.redraw()
+    
+  move: (x,y) ->
+    @x += x * @zoom
+    @y += y * @zoom
     @simulation.redraw()
 
 class Simulation
@@ -262,5 +267,12 @@ $ ->
   $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)
   )
+  shortcut.add('space', -> simulation.toggle())
+  shortcut.add('left', -> simulation.zoom.move(-100,0))
+  shortcut.add('right', -> simulation.zoom.move(100,0))
+  shortcut.add('up', -> simulation.zoom.move(0,-100))
+  shortcut.add('down', -> simulation.zoom.move(0,100))
+  shortcut.add('Ctrl+up', -> simulation.zoom.do_zoom(1))
+  shortcut.add('Ctrl+down', -> simulation.zoom.do_zoom(-1))
   if !window.Worker
     alert('Sorry, your browser does not support web workers. Try more recent versions of Chrome, Firefox, Opera or Safari')
