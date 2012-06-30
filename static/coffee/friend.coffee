@@ -11,6 +11,7 @@ class Friend
     @protected = data.protected
     @name = data.screen_name
     @randomize_position()
+    @hostage = no
     @div = $("<div>")
           .addClass('friend')
           .appendTo("body")
@@ -18,6 +19,16 @@ class Friend
           .bind('click', (event) => @click())
           .bind('dblclick', (event) => @dblclick())
           .attr('title', "@" + data.screen_name + " - " + data.description)
+          .draggable({
+            start: (event, ui) =>
+              @hostage = yes
+              event.stopPropagation()
+            drag: (event, ui) ->
+              event.stopPropagation()
+            stop: (event, ui) ->
+              event.stopPropagation()
+          })
+
     if @protected
       @div.addClass 'protected'
     $("<img>")
@@ -79,8 +90,9 @@ class Friend
       ctx.lineTo(new_x, new_y)
      
   redraw: ->
-    @div.css('top', @zoom.translate_y(@y))
-        .css('left', @zoom.translate_x(@x))
+    if not @hostage
+      @div.css('top', @zoom.translate_y(@y))
+          .css('left', @zoom.translate_x(@x))
   set_zoom: (zoom) ->
     @zoom = zoom
 

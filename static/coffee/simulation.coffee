@@ -6,25 +6,25 @@ class Zoom
     @y = 0
     @zoom = 1
     @mousedown = no
-    $("body").mousedown( (event) =>
-      @draglocation_x = event.pageX
-      @draglocation_y = event.pageY
-      @mousedown = yes
-    )
-    $("body").mouseup( =>
-      @mousedown = no
-    )
-    $("body").mousemove( (event) =>
-      if @mousedown
-        dx = @draglocation_x - event.pageX
-        dy = @draglocation_y - event.pageY
-        if Math.abs(dx) + Math.abs(dy) > 50
+    $("body").draggable({
+      helper: () =>
+        $("<div>").css('position','absolute').css('width', '100px').css('height', '100px')
+      start: (event, ui) =>
+        @draglocation_x = ui.offset.left
+        @draglocation_y = ui.offset.top
+      stop: (event, ui) =>
+        console.log(ui)
+      drag: (event, ui) =>
+        dx = @draglocation_x - ui.offset.left
+        dy = @draglocation_y - ui.offset.top
+        if Math.abs(dx) + Math.abs(dy) > 20
           @x += dx*@zoom
           @y += dy*@zoom
           simulation.redraw()
-          @draglocation_x = event.pageX
-          @draglocation_y = event.pageY
-    )
+          @draglocation_x = ui.offset.left
+          @draglocation_y = ui.offset.top
+
+    })
   translate_x_back: (x) ->
     (x * @zoom) + @x
   translate_y_back: (y) ->
