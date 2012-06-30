@@ -160,6 +160,7 @@ class Simulation
     @gravity_worker.postMessage({who_is_popular_here: yes, x: x, y: y, zoom: @zoom.zoom})
   add_protagonist: (name) =>
     downloader.no_more_twitter = no
+    downloader.no_more_twitter_count = 0
     downloader.no_more_pipes = no
     downloader.q.push(
       {name: name}

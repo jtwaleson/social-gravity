@@ -1,5 +1,6 @@
 class Downloader
   constructor: ->
+    @no_more_twitter_count = 0
     @no_more_twitter = no
     @no_more_pipes = no
 
@@ -32,7 +33,7 @@ class Downloader
           data: JSON.stringify(object)
         )
         return callback object, null
-      if @no_more_twitter
+      if @no_more_twitter_count > 4
         return callback null, object
       base_url = 'http://api.twitter.com/1'
       if get_friends
@@ -50,7 +51,8 @@ class Downloader
         type: 'POST'
         url: task.twitter_url
         dataType: "jsonp"
-        success: (r,a,xhr) ->
+        success: (r,a,xhr) =>
+          @no_more_twitter_count = 0
           if get_friends
             object.friends = r
             $.post(
@@ -62,7 +64,7 @@ class Downloader
             callback null, r[0]
         timeout: 1000
         error: =>
-          @no_more_twitter = yes
+          @no_more_twitter_count += 1
           callback null, object
       )
 
