@@ -156,7 +156,7 @@ $ ->
         .insertAfter(@)
         .focus()
         .change( ->
-          if /[^a-z_]/g.test($(@).val().toLowerCase())
+          if /[^a-z_0-9]/g.test($(@).val().toLowerCase())
             alert('Not a valid twitter handle. Use letters and underscores only.')
           else
             simulation.add_protagonist($(@).val())
