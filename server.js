@@ -60,12 +60,13 @@ db.open(function(err,db){
             var id = path[3];
             find(response, db, type, id);
         }
-        else (path.length == 5 && path[2] == 'post') {
+        else if (path.length == 5 && path[2] == 'post') {
             var type = path[3];
             var id = path[4];
             store(response, db, type, id, request);
+        } else {
+            res.writeHead(400);
+            res.end('invalid');
         }
-        res.writeHead(400);
-        res.end('invalid');
     }).listen(82);
 });
