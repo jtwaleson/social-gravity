@@ -13,25 +13,25 @@ var db = new Db('socialgraph', new Server(host, port, {}));
 
 
 function find(response, db, type, id) {
-	var searchquery = {id: id}
-	if (type == 'userbyname') {
-		type = 'user';
-		searchquery = {lower_screen_name: id.toLowerCase()};
-	}
-	db.collection(type, function(err, collection) {
-		collection.findOne(searchquery, function(err, result) {
-			if (result != null) {
-				response.writeHead(200, {'Cache-Control': 'max-age=432000', 'Content-Type': 'application/json; charset=utf-8'});
-				if (type == 'followers')
-					response.end(JSON.stringify(result));
-				else
-					response.end(JSON.stringify([result]));
-			} else {
-				response.writeHead(404);
-				response.end('not found');
-			}
-		});
-	});
+    var searchquery = {id: id}
+    if (type == 'userbyname') {
+        type = 'user';
+        searchquery = {lower_screen_name: id.toLowerCase()};
+    }
+    db.collection(type, function(err, collection) {
+        collection.findOne(searchquery, function(err, result) {
+            if (result != null) {
+                response.writeHead(200, {'Cache-Control': 'max-age=432000', 'Content-Type': 'application/json; charset=utf-8'});
+                if (type == 'followers')
+                    response.end(JSON.stringify(result));
+                else
+                    response.end(JSON.stringify([result]));
+            } else {
+                response.writeHead(404);
+                response.end('not found');
+            }
+        });
+    });
 }
 function store(response, db, type, id, request) {
         var body = '';
@@ -43,8 +43,8 @@ function store(response, db, type, id, request) {
                 db.collection(type, function(err, collection) {
                         collection.remove({id:id});
                         body['id'] = id;
-			if ('screen_name' in body)
-				body['lower_screen_name'] = body['screen_name'].toLowerCase();
+            if ('screen_name' in body)
+                body['lower_screen_name'] = body['screen_name'].toLowerCase();
                         collection.insert(body); 
                         response.writeHead(200);
                         response.end('ok');
@@ -53,21 +53,19 @@ function store(response, db, type, id, request) {
 }
 
 db.open(function(err,db){
-	http.createServer(function(request, response) {
-		var path = url.parse(request.url).path.split('/');
-		if (path.length == 4) {
-			var type = path[2];
-			var id = path[3];
-			
-			if (request.method == 'GET') {
-				find(response, db, type, id);
-				return;
-			} else if (request.method == 'POST') {
-				store(response, db, type, id, request);
-				return;
-			}
-		}
-		res.writeHead(400);
-		res.end('invalid');
-	}).listen(82);
+    http.createServer(function(request, response) {
+        var path = url.parse(request.url).path.split('/');
+        if (path.length == 4) {
+            var type = path[2];
+            var id = path[3];
+            find(response, db, type, id);
+        }
+        else (path.length == 5 && path[2] == 'post') {
+            var type = path[3];
+            var id = path[4];
+            store(response, db, type, id, request);
+        }
+        res.writeHead(400);
+        res.end('invalid');
+    }).listen(82);
 });
