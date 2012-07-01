@@ -33,7 +33,7 @@ class Downloader
       if get_friends and object? and (object.protected is 'true' or object.protected is true)
         object.friends = []
         $.post(
-          '/cache/user/'+object.id
+          'http://direct.socail-gravity.net/cache/user/'+object.id
           data: JSON.stringify(object)
         )
         return callback object, null
@@ -58,7 +58,7 @@ class Downloader
           if get_friends
             object.friends = r
             $.post(
-              '/cache/user/'+object.id
+              'http://direct.socail-gravity.net/cache/user/'+object.id
               data: JSON.stringify(object)
             )
             callback object, null
