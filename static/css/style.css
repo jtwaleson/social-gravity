@@ -80,6 +80,10 @@ ul#menu li button#add-protagonist {
     margin-top: -37px;
     background-color: red;
 }
+html body .friend.pinned {
+    border-width: 2px 10px;
+    box-shadow: 0 0 70px black !important;
+}
 .friend.protected {
     background-image: url(lock.png);
     background-position: 72px 5px;

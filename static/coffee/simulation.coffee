@@ -147,8 +147,12 @@ class Simulation
     @friends = {}
     @redraw()
 
-  force_position: (f) ->
+  take_hostage: (f) ->
     @gravity_worker.postMessage({id: f.id, force_x: f.x, force_y: f.y})
+
+  release_hostage: (f) ->
+    @gravity_worker.postMessage({release_hostage: f.id})
+
   register: (friend) ->
     friend.set_zoom(@zoom)
     @friends[friend.id] = friend

@@ -12,7 +12,7 @@ class Friend
     @name = data.screen_name
     @randomize_position()
     @hostage = no
-    @locked = no
+    @pinned = no
     @div = $("<div>")
           .addClass('friend')
           .appendTo("body")
@@ -31,10 +31,12 @@ class Friend
               )
             drag: (event, ui) =>
               event.stopPropagation()
-              simulation.force_position({
+              @x = @zoom.translate_x_back(ui.offset.left)
+              @y = @zoom.translate_y_back(ui.offset.top)
+              simulation.take_hostage({
                 id: @id
-                x: @zoom.translate_x_back(ui.offset.left)
-                y: @zoom.translate_y_back(ui.offset.top)
+                x: @x
+                y: @y
               })
             stop: (event, ui) =>
               @hostage = no
@@ -44,6 +46,10 @@ class Friend
                   ui.helper.unbind("click.prevent")
                 300
               )
+              if not @pinned
+                simulation.release_hostage({
+                  id: @id
+                })
           })
 
     if @protected
@@ -73,10 +79,25 @@ class Friend
     simulation.redraw_lines()
   
   dblclick: =>
-    if confirm "Would you like to add the friends of @#{ @data.screen_name }?"
-      if confirm "Clear the current field?"
-        simulation.clear()
-      simulation.add_protagonist(@data.screen_name)
+    @pinned = not @pinned
+    if @pinned
+      @div.addClass('pinned')
+      simulation.take_hostage({
+        id: @id
+        x: @x
+        y: @y
+      })
+    else
+      simulation.release_hostage({
+        id: @id
+      })
+      @div.removeClass('pinned')
+
+    #    if confirm "Would you like to add the friends of @#{ @data.screen_name }?"
+    #  if confirm "Clear the current field?"
+    #    simulation.clear()
+    #  simulation.add_protagonist(@data.screen_name)
+
   setX: (x) ->
     @x = x
   setY: (y) ->

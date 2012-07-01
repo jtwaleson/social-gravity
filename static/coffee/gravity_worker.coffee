@@ -1,9 +1,12 @@
 center_x = 0
 center_y = 0
 friends = {}
+hostages = {}
 stop = no
 run = no
 move = (a, b_x, b_y, amount, proportional=no) ->
+  if a.id of hostages
+    return
   dx = a.x - b_x
   dy = a.y - b_y
 
@@ -79,9 +82,13 @@ randomize = (friend) ->
     friends[event.data.new_friend] = {x: event.data.x, y: event.data.y, id: event.data.new_friend, friends: event.data.friends}
   else if 'clear' of event.data
     friends = {}
+    hostages = {}
   else if 'continue' of event.data
     start()
+  else if 'release_hostage' of event.data
+    delete hostages[event.data.release_hostage]
   else if 'force_x' of event.data
+    hostages[event.data.id] = 0
     friends[event.data.id].x = event.data.force_x
     friends[event.data.id].y = event.data.force_y
   else if 'start' of event.data
