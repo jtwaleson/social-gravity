@@ -70,7 +70,7 @@ ul#menu li button#add-protagonist {
     cursor: pointer;
     overflow: hidden;
 }
-.friend.searching {
+html body .friend.searching {
     z-index: 600 !important;
     border-color: red;
     opacity: 1 !important;
@@ -81,6 +81,7 @@ ul#menu li button#add-protagonist {
     background-color: red;
 }
 html body .friend.pinned {
+    opacity: 1 !important;
     border-width: 2px 10px;
     box-shadow: 0 0 70px black !important;
 }
@@ -93,12 +94,16 @@ html body .friend.pinned {
     opacity: 1;
 }
 .friend:hover {
+    opacity: 1 !important;
+    background-color: green;
     z-index: 200 !important;
     border-width: 4px;
     margin-left: -42px;
     margin-top: -37px;
 }
 .friend.followed.follows {
+    opacity: 1 !important;
+    background-color: green;
     background-color: purple !important;
     box-shadow: 0 0 70px purple;
 }
@@ -119,6 +124,7 @@ body .friend.highlight img {
 body .friend.highlight,
 body .friend.highlight.follows.followed {
     background-color: black !important;
+    opacity: 1 !important;
     z-index: 100;
     box-shadow: 0 0 70px black;
     color: white;
@@ -135,7 +141,36 @@ body .friend.highlight.follows.followed {
 .friend img {
     height: 48px;
     width: 48px;
+}
+.friend.fade1{
+    opacity: 0.1;
+}
+.friend.fade2{
+    opacity: 0.2;
+}
+.friend.fade3{
+    opacity: 0.3;
+}
+.friend.fade4{
+    opacity: 0.4;
+}
+.friend.fade5{
     opacity: 0.5;
+}
+.friend.fade6{
+    opacity: 0.6;
+}
+.friend.fade7{
+    opacity: 0.7;
+}
+.friend.fade8{
+    opacity: 0.8;
+}
+.friend.fade9{
+    opacity: 0.9;
+}
+.friend.fade10{
+    opacity: 1;
 }
 #canvas {
     pointer-events: none;

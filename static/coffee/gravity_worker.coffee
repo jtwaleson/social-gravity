@@ -4,6 +4,7 @@ friends = {}
 hostages = {}
 number_of_followers = {}
 max_number_of_followers = 0
+previous_number = {}
 stop = no
 run = no
 move = (a, b_x, b_y, amount, proportional=no) ->
@@ -88,16 +89,23 @@ randomize = (friend) ->
       number_of_followers[id] += 1
       if id of friends and number_of_followers[id] > max_number_of_followers
         max_number_of_followers = number_of_followers[id]
-    max_log = Math.log(max_number_of_followers) * 2
+    max_log = Math.log(max_number_of_followers)
     result = {}
+    min_visibility = 0.4
     for id, _ of friends
-      result[id] = 0.5 + (Math.log(number_of_followers[id]) / max_log)
-    postMessage({popularity: result})
+      result[id] = Math.round(10 * (min_visibility + (Math.log(number_of_followers[id]) / max_log) * (1 - min_visibility)))
+    final_results = {}
+    for id, num of result
+      if id not of previous_number or previous_number[id] != num
+        final_results[id] = num
+        previous_number[id] = num
+    postMessage({popularity: final_results})
   else if 'clear' of event.data
     friends = {}
     hostages = {}
     number_of_followers = {}
     max_number_of_followers = 0
+    previous_number = {}
   else if 'continue' of event.data
     start()
   else if 'release_hostage' of event.data

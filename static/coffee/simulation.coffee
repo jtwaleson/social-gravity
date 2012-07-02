@@ -107,7 +107,6 @@ class Simulation
   message_from_gravity_worker: (event) =>
     if 'console' of event.data
       console.log(event.data.console)
-      return
     if 'popular_guys' of event.data
       div = $("#who_to_follow")
       div.empty()
@@ -122,7 +121,11 @@ class Simulation
       @words_worker.postMessage({friends: event.data.guys})
     else if 'popularity' of event.data
       for id, pop of event.data.popularity
-        @friends[id].div.fadeTo('slow', pop)
+        for n in [0..10]
+          @friends[id].div.removeClass("fade#{n}")
+        fadeclass = "fade#{pop}"
+        if fadeclass isnt "fadeNaN"
+          @friends[id].div.addClass(fadeclass)
     else
       for d in event.data
         friend = @friends[d.id]
