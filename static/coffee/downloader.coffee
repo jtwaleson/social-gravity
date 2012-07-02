@@ -153,13 +153,15 @@ $ ->
     $("<input>")
         .addClass("protagonist_adder")
         .attr("type", "text")
+        .attr("placeholder", "@twitter_handle")
         .insertAfter(@)
         .focus()
         .change( ->
-          if /[^a-z_0-9]/g.test($(@).val().toLowerCase())
+          v = $(@).val().toLowerCase().replace("@", "")
+          if /[^a-z_0-9]/g.test(v)
             alert('Not a valid twitter handle. Use letters and underscores only.')
           else
-            simulation.add_protagonist($(@).val())
+            simulation.add_protagonist(v)
             $(@).remove()
         )
         .keyup( (event) ->

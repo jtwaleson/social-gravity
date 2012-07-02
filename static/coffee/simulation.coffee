@@ -70,6 +70,7 @@ class Simulation
       $("<input>")
           .addClass("person-finder")
           .attr("type", "text")
+          .attr("placeholder", "name / description")
           .insertAfter(@)
           .focus()
           .change( ->
