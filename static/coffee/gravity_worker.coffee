@@ -2,6 +2,8 @@ center_x = 0
 center_y = 0
 friends = {}
 hostages = {}
+number_of_followers = {}
+max_number_of_followers = 0
 stop = no
 run = no
 move = (a, b_x, b_y, amount, proportional=no) ->
@@ -80,9 +82,22 @@ randomize = (friend) ->
 @onmessage = (event) ->
   if 'new_friend' of event.data
     friends[event.data.new_friend] = {x: event.data.x, y: event.data.y, id: event.data.new_friend, friends: event.data.friends}
+    for id, _ of event.data.friends
+      if id not of number_of_followers
+        number_of_followers[id] = 0
+      number_of_followers[id] += 1
+      if id of friends and number_of_followers[id] > max_number_of_followers
+        max_number_of_followers = number_of_followers[id]
+    max_log = Math.log(max_number_of_followers) * 2
+    result = {}
+    for id, _ of friends
+      result[id] = 0.5 + (Math.log(number_of_followers[id]) / max_log)
+    postMessage({popularity: result})
   else if 'clear' of event.data
     friends = {}
     hostages = {}
+    number_of_followers = {}
+    max_number_of_followers = 0
   else if 'continue' of event.data
     start()
   else if 'release_hostage' of event.data

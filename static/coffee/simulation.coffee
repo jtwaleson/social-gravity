@@ -120,6 +120,9 @@ class Simulation
 #            alert(message)
 #        )
       @words_worker.postMessage({friends: event.data.guys})
+    else if 'popularity' of event.data
+      for id, pop of event.data.popularity
+        @friends[id].div.fadeTo('slow', pop)
     else
       for d in event.data
         friend = @friends[d.id]
