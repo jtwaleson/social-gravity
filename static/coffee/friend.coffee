@@ -77,9 +77,13 @@ class Friend
       if @data.status.text
         s.push(@data.status.text)
     s.join(" ")
-  randomize_position: ->
-    @x = Math.random()*innerWidth
-    @y = Math.random()*innerHeight
+  randomize_position: (amount = -1) ->
+    if amount > -1
+      @x += Math.random() * amount - amount / 2
+      @y += Math.random() * amount - amount / 2
+    else
+      @x = Math.random()*innerWidth
+      @y = Math.random()*innerHeight
   click: ->
     @highlight = !@highlight
     @div.toggleClass('highlight')

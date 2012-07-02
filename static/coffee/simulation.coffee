@@ -57,11 +57,26 @@ class Simulation
     @words_worker = new Worker 'js/words_worker.js'
     @words_worker.onmessage = @message_from_words_worker
     @running = no
+    @chaos_key_timeout = -1
     @button = new Button("&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
     )
-    new Button("&#x2743;", "Randomize", "r",  "", =>
-      @randomize_positions()
+    new Button("&#x2743;", "Randomize", "r",  "", ->
+      if $(".chaosmeter").length > 0
+        $(".chaosmeter").width($(".chaosmeter").width() + 10)
+      else
+        $(@).after(
+          $("<div>").addClass("chaosmeter")
+        )
+      if simulation.chaos_key_timeout > -1
+        clearTimeout(simulation.chaos_key_timeout)
+      simulation.chaos_key_timeout = setTimeout(
+        ->
+          simulation.chaos_key_timeout = -1
+          simulation.randomize_positions($(".chaosmeter").width()*5)
+          $(".chaosmeter").remove()
+        500
+      )
     )
     new Button("&#x2205;", "Clear", "c",  "", =>
       @clear()
@@ -99,7 +114,6 @@ class Simulation
       console.log(event.data.console)
 
     if 'words' of event.data
-      console.log event.data.words
       @friends[event.data.id].words = event.data.words
     else
       div = $("#words").empty()
@@ -141,9 +155,9 @@ class Simulation
           100
         )
 
-  randomize_positions: ->
+  randomize_positions: (amount = -1) ->
     for id, friend of @friends when not friend.pinned
-      friend.randomize_position()
+      friend.randomize_position(amount)
       @gravity_worker.postMessage({id: friend.id, new_x: friend.x, new_y: friend.y})
     @redraw()
 

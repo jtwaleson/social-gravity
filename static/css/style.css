@@ -32,6 +32,13 @@ ul#menu {
 ul#menu li {
     margin: 10px;
 }
+#menu .chaosmeter {
+    display: inline-block;
+    background-color: red;
+    position: relative;
+    height: 1em;
+    width: 2em;
+}
 #menu button {
     border: 1px;
     border-radius: 3px;
