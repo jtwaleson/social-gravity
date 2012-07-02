@@ -21,13 +21,15 @@ move = (a, b_x, b_y, amount, proportional=no) ->
     dy = 0.001
   
   d = dx*dx + dy*dy
-  dst = 200
+  dst = 400
   halfdst = dst/2
 
   if proportional
     if d < dst*dst
       if d < dst
-        d = dst
+        friends[a.id].x += Math.random()*dst - halfdst
+        friends[a.id].y += Math.random()*dst - halfdst
+        return
       amount = amount * (halfdst*halfdst) / d
     else
       return
@@ -65,11 +67,11 @@ start = ->
 #    move(friendA, center_x, center_y, 1)
     for idB, friendB of friends
       if idA of friendB.friends and idB of friendA.friends
-        move(friendB, friendA.x, friendA.y, 10)
+        move(friendB, friendA.x, friendA.y, 8)
       else if idA of friendB.friends
-        move(friendB, friendA.x, friendA.y, 5)
-      else
-        move(friendA, friendB.x, friendB.y, -1, yes)
+        move(friendB, friendA.x, friendA.y, 1)
+#      else
+      move(friendA, friendB.x, friendB.y, -5, yes)
       
   list = for k,i of friends
     {id: i.id, x: i.x, y:i.y}
