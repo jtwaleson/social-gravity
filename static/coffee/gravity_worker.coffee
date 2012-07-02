@@ -120,7 +120,7 @@ randomize = (friend) ->
     friends[event.data.id].x = event.data.new_x
     friends[event.data.id].y = event.data.new_y
   else if 'who_is_popular_here' of event.data
-    max_distance = 50
+    max_distance = 150
     guys = []
     r = max_distance * event.data.zoom
     x = event.data.x
