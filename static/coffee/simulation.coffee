@@ -137,7 +137,7 @@ class Simulation
         )
 
   randomize_positions: ->
-    for id, friend of @friends
+    for id, friend of @friends when not friend.pinned
       friend.randomize_position()
       @gravity_worker.postMessage({id: friend.id, new_x: friend.x, new_y: friend.y})
     @redraw()
