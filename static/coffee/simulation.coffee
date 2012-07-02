@@ -259,6 +259,13 @@ class Button
               .addClass(divclass)
               .click(func)
               .attr('title', description + ' - Hot key: ' + keystroke)
+              .hover(
+                ->
+                  $(@).html(description)
+                ->
+                  $(@).html(caption)
+              )
+
                           
     li = $("<li>")
     li.append(@div)

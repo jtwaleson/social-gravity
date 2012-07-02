@@ -41,7 +41,7 @@ ul#menu li {
     text-align: center;
     padding-top: 6px;
     padding-bottom: 6px;
-    width: 2em;
+    min-width: 2em;
     font-weight: bold;
 }
 ul#menu li button#add-protagonist {
