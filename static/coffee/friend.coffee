@@ -43,6 +43,8 @@ class Friend
                 x: @x
                 y: @y
               })
+              if not simulation.running
+                simulation.redraw_lines()
             stop: (event, ui) =>
               @hostage = no
               event.stopPropagation()
