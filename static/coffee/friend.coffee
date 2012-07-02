@@ -13,6 +13,7 @@ class Friend
     @randomize_position()
     @hostage = no
     @pinned = no
+    @words = ''
     title = "@#{ data.screen_name }"
     if data.description? and data.description.length > 0
       title += " - #{ data.description }"
@@ -69,7 +70,7 @@ class Friend
            
     simulation.register(@)
   get_strings: ->
-    s = [@data.description, @data.location]
+    s = [@data.description, @data.location, @data.screen_name, @data.name]
     if @data.status
       if @data.status.text
         s.push(@data.status.text)

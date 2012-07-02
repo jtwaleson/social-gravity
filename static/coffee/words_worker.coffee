@@ -121,7 +121,9 @@ class Friend
 friends = {}
 @onmessage = (event) ->
   if 'new_friend' of event.data
-    friends[event.data.new_friend] = new Friend(event.data.strings, event.data.friends)
+    f = new Friend(event.data.strings, event.data.friends)
+    friends[event.data.new_friend] = f
+    postMessage({id: event.data.new_friend, words: f.words.join(" ")})
   else if 'friends' of event.data
     words = {}
     for friend in event.data.friends
