@@ -13,13 +13,17 @@ class Friend
     @randomize_position()
     @hostage = no
     @pinned = no
+    title = "@#{ data.screen_name }"
+    if data.description? and data.description.length > 0
+      title += " - #{ data.description }"
+    title += " - followers: #{ data.followers_count } - follows: #{ data.friends_count }"
     @div = $("<div>")
           .addClass('friend')
           .appendTo("body")
           .attr('id', @id)
           .bind('click', (event) => @click())
           .bind('dblclick', (event) => @dblclick())
-          .attr('title', "@" + data.screen_name + " - " + data.description)
+          .attr('title', title)
           .draggable({
             start: (event, ui) =>
               @hostage = yes
