@@ -300,9 +300,21 @@ $ ->
   $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)
   )
-  shortcut.add('space', -> simulation.toggle())
-  shortcut.add('left', -> simulation.zoom.move(-100,0))
-  shortcut.add('right', -> simulation.zoom.move(100,0))
+  shortcut.add(
+    'space'
+    -> simulation.toggle()
+    {disable_in_input: yes}
+  )
+  shortcut.add(
+    'left'
+    -> simulation.zoom.move(-100,0)
+    {disable_in_input: yes}
+  )
+  shortcut.add(
+    'right'
+    -> simulation.zoom.move(100,0)
+    {disable_in_input: yes}
+  )
   shortcut.add('up', -> simulation.zoom.move(0,-100))
   shortcut.add('down', -> simulation.zoom.move(0,100))
   shortcut.add('Ctrl+up', -> simulation.zoom.do_zoom(1))
