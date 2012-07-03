@@ -106,6 +106,31 @@ class Simulation
             $(@).remove()
           )
     )
+    @expand_button = new Button("expand", "Expand", "e",  "", =>
+      highlighted = (friend for id, friend of @friends when friend.highlight)
+
+      if highlighted.length == 0
+        alert 'Impossibru'
+      else
+        ids = {}
+        for f in highlighted
+          for id, _ of f.friends
+            if id not of ids
+              ids[id] = 0
+            ids[id] += 1
+
+        if highlighted.length > 1
+          min = parseInt(prompt 'Threshold plz')
+          for id, num of ids
+            if ids[id] < min
+              delete ids[id]
+        @clear()
+        for f in highlighted
+          @add_friend(f.id)
+        for id, _ of ids
+          @add_friend(id)
+    )
+    @expand_button.div.hide()
     @box = $("<div>").attr('id', 'box').appendTo("body")
     @redraw()
 
@@ -257,16 +282,21 @@ class Simulation
             @add_friend id
     )
   add_friend: (id) =>
-    if id of @friends
-      return
     downloader.q.push(
       {id: id}
       (result) =>
         if result.error?
           downloader.failed_downloads += 1
         else
+          if id of @friends
+            return
           new Friend(result.result)
     )
+  check_expand_button: ->
+    if $(".friend.highlight").length > 0
+      @expand_button.div.show()
+    else
+      @expand_button.div.hide()
 
 class Button
   constructor: (caption, description, keystroke, divclass, func) ->

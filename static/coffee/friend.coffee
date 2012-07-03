@@ -88,6 +88,7 @@ class Friend
     @highlight = !@highlight
     @div.toggleClass('highlight')
     simulation.redraw_lines()
+    simulation.check_expand_button()
   
   dblclick: =>
     @pinned = not @pinned
