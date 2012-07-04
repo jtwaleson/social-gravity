@@ -276,8 +276,8 @@ class Simulation
         else if result.result.protected
           alert("This user has a protected account. We can not see his/her friends")
         else
-          if result.result.id not of @friends
-            friend = new Friend(result.result)
+          #          if result.result.id not of @friends
+          #            friend = new Friend(result.result)
           for id in result.result.friends.ids.reverse()
             @add_friend id
     )

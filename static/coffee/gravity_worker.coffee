@@ -7,71 +7,63 @@ max_number_of_followers = 0
 previous_number = {}
 stop = no
 run = no
-move = (a, b_x, b_y, amount, proportional=no) ->
+move = (a, b, amount, proportional=no) ->
   if a.id of hostages
     return
-  dx = a.x - b_x
-  dy = a.y - b_y
+  if b.id of hostages and not proportional
+    amount *= 4
 
-  if dx == 0 and dy == 0
-    return
+  dx = a.x - b.x
+  dy = a.y - b.y
+
   if dx == 0
     dx = 0.001
   if dy == 0
     dy = 0.001
   
-  d = dx*dx + dy*dy
-  dst = 400
-  halfdst = dst/2
+  distancesq = dx*dx + dy*dy
+  boundary = 200
+  boundarysq = boundary*boundary
+
+#  postMessage({console: [dx,dy, distancesq, boundarysq]})
 
   if proportional
-    if d < dst*dst
-      if d < dst
-        friends[a.id].x += Math.random()*dst - halfdst
-        friends[a.id].y += Math.random()*dst - halfdst
-        return
-      amount = amount * (halfdst*halfdst) / d
+    if distancesq < boundarysq
+      amount *= Math.min(5, Math.abs(1 / (distancesq / boundarysq )))
     else
       return
   else
-    if d < (dst*dst) / 2
-      return
-      
+    if distancesq > amount*amount
+      amount = Math.sqrt(distancesq) / 2
 
-  if dx*dx > dy*dy
-    px = 1
-    py = Math.abs(dy/dx)
-  else
-    px = Math.abs(dx/dy)
-    py = 1
+   #   return
 
-  if dx < 0
-    px *= -1
-  if dy < 0
-    py *= -1
+  angle = Math.atan2(dx, dy)
 
-  mx = amount*px
-  my = amount*py
 
-  if Math.abs(mx) > Math.abs(dx)
-    mx = dx
-  if Math.abs(my) > Math.abs(dy)
-    my = dy
+  add_x = amount * Math.sin(angle)
+  add_y = amount * Math.cos(angle)
 
-  friends[a.id].x -= mx
-  friends[a.id].y -= my
+  friends[a.id].x -= add_x
+  friends[a.id].y -= add_y
 
 start = ->
 #    postMessage({console: friends})
   for idA, friendA of friends
 #    move(friendA, center_x, center_y, 1)
-    for idB, friendB of friends
+    for idB, friendB of friends when idB > idA
       if idA of friendB.friends and idB of friendA.friends
-        move(friendB, friendA.x, friendA.y, 8)
+        move(friendB, friendA, 10)
+        move(friendA, friendB, 10)
+      else if idB of friendA.friends
+        move(friendA, friendB, 4)
+        move(friendB, friendA, 2)
       else if idA of friendB.friends
-        move(friendB, friendA.x, friendA.y, 1)
+        move(friendA, friendB, 2)
+        move(friendB, friendA, 4)
 #      else
-      move(friendA, friendB.x, friendB.y, -5, yes)
+      move(friendA, friendB, -2, yes)
+      move(friendB, friendA, -2, yes)
       
   list = for k,i of friends
     {id: i.id, x: i.x, y:i.y}
@@ -80,7 +72,6 @@ start = ->
 randomize = (friend) ->
   friend.x += Math.random()*4 - 2
   friend.y += Math.random()*4 - 2
-  postMessage([{id: friend.id, x: friend.x, y:friend.y}])
   
 @onmessage = (event) ->
   if 'new_friend' of event.data
