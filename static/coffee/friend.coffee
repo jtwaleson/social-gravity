@@ -22,8 +22,8 @@ class Friend
           .addClass('friend')
           .appendTo("body")
           .attr('id', @id)
-          .bind('click', (event) => @click())
-          .bind('dblclick', (event) => @dblclick())
+          .bind('click', (event) => @click(event))
+          .bind('dblclick', (event) => @dblclick(event))
           .attr('title', title)
           .draggable({
             start: (event, ui) =>
@@ -84,7 +84,15 @@ class Friend
     else
       @x = Math.random()*innerWidth
       @y = Math.random()*innerHeight
-  click: ->
+  click: (event) ->
+    if event? and event.ctrlKey
+      for id, f of simulation.friends when f.highlight
+        f.highlight = not f.highlight
+        f.div.toggleClass('highlight')
+    else if event? and event.shiftKey
+      for id, f of simulation.friends when id of @friends and not f.highlight
+        f.highlight = not f.highlight
+        f.div.toggleClass('highlight')
     @highlight = !@highlight
     @div.toggleClass('highlight')
     simulation.redraw_lines()
