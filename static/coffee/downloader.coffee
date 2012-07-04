@@ -1,11 +1,71 @@
+class DownloadStatus
+
+  constructor: (downloader, container) ->
+    @downloader = downloader
+    @div = $("<div>")
+      .addClass('download_status')
+      .hide()
+      .appendTo(container)
+    @failed_count = 0
+    @queue = $("<span>").addClass('queue')
+    @failed = $("<span>").addClass('failed')
+    @success = $("<span>").addClass('success')
+    @stopstart = $("<button>")
+      .click( ->
+        console.log downloader.q.concurrency
+        if downloader.q.concurrency == 0
+          downloader.q.concurrency = 1
+          downloader.q.process()
+          $(@).html('&#x25a0;')
+        else
+          downloader.q.concurrency = 0
+          $(@).html('&#x25b6;')
+      )
+      .html('&#x25a0;')
+    @div.append(@queue).append(@failed).append(@success).append(@stopstart)
+    @update()
+
+  update: ->
+    if @downloader.q.length() > 0
+      @div.show()
+      @queue.text "queued: #{ @downloader.q.length() }"
+      @failed.text "failed: #{ @downloader.failed_downloads }"
+      @success.text "success: #{ $(".friend").length }"
+    else
+      @div.hide()
+
+
+
 class Downloader
   constructor: ->
     @no_more_twitter_count = 0
     @no_more_twitter = no
     @no_more_pipes = no
     @failed_downloads = 0
-
-    @counter = $("<div>").appendTo("body").attr("id", "download_counter")
+    @btn = new Button("@", "Add a new person of interest", "a", "glow", ->
+      $(@).removeClass('glow')
+      $("<input>")
+        .addClass("protagonist_adder")
+        .attr("type", "text")
+        .attr("placeholder", "@twitter_handle")
+        .insertAfter(@)
+        .focus()
+        .change( ->
+          v = $(@).val().toLowerCase().replace("@", "")
+          if /[^a-z_0-9]/g.test(v)
+            alert('Not a valid twitter handle. Use letters and underscores only.')
+          else
+            simulation.add_protagonist(v)
+            $(@).remove()
+        )
+        .keyup( (event) ->
+          if event.keyCode == 27
+            $(@).remove()
+        )
+        .blur( ->
+          $(@).remove()
+        )
+    )
 
     try_cache = (task, callback) =>
       if task.name?
@@ -120,7 +180,7 @@ class Downloader
                 (object, callback) -> callback              null, "Could not complete result"
               ]
               (result, error) ->
-                downloader.counter.text(downloader.q.length())
+                downloader.status.update()
                 if error?
                   callback {error: error}
                 else
@@ -136,42 +196,17 @@ class Downloader
           for id, friend of simulation.friends when friend.highlight
             friend.click()
           if @failed_downloads > 0
-            error_report = " However, we failed to load #{ @failed_downloads } friends, probably due to twitter rate limiting. Come back in one hour to load more users."
-          else
-            error_report = ""
-          alert "Done loading users.#{ error_report }"
+            alert "Done loading users. However, we failed to load #{ @failed_downloads } friends, probably due to twitter rate limiting. Come back in one hour to load more users."
           @failed_downloads = 0
           @no_more_twitter = no
           @no_more_twitter_count = 0
           @no_more_pipes = no
         1000
       )
+    @status = new DownloadStatus(@, @btn.div.parent())
 $ ->
   window.downloader = new Downloader
-  new Button("@", "Add a new person of interest", "a", "glow", ->
-    $(@).removeClass('glow')
-    $("<input>")
-        .addClass("protagonist_adder")
-        .attr("type", "text")
-        .attr("placeholder", "@twitter_handle")
-        .insertAfter(@)
-        .focus()
-        .change( ->
-          v = $(@).val().toLowerCase().replace("@", "")
-          if /[^a-z_0-9]/g.test(v)
-            alert('Not a valid twitter handle. Use letters and underscores only.')
-          else
-            simulation.add_protagonist(v)
-            $(@).remove()
-        )
-        .keyup( (event) ->
-          if event.keyCode == 27
-            $(@).remove()
-        )
-        .blur( ->
-          $(@).remove()
-        )
-  )
+
 #        for id in data.friends[0].ids when id not of simulation.friends
 #          do (id) ->
 #            downloader.by_user_id(

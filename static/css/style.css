@@ -32,6 +32,26 @@ ul#menu {
 ul#menu li {
     margin: 10px;
 }
+#menu .download_status {
+    display: inline-block;
+}
+#menu .download_status span {
+    margin-left: 10px;
+    background-color: white;
+    border-radius: 4px;
+    padding: 4px;
+    border: 1px solid black;
+}
+#menu .download_status span.failed {
+    color: red;
+}
+#menu .download_status span.success {
+    color: green;
+}
+#menu .download_status span.queue {
+    color: black;
+}
+
 #menu .chaosmeter {
     display: inline-block;
     background-color: red;
@@ -235,11 +255,6 @@ body .friend.highlight.follows.followed {
 }
 button {
     transition: background-color 0.5s;
-}
-#download_counter {
-    position: absolute;
-    right: 0;
-    bottom:0;
 }
 #box {
     position: absolute;
