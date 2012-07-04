@@ -11,15 +11,11 @@ class DownloadStatus
     @failed = $("<span>").addClass('failed')
     @success = $("<span>").addClass('success')
     @stopstart = $("<button>")
-      .click( ->
-        console.log downloader.q.concurrency
-        if downloader.q.concurrency == 0
-          downloader.q.concurrency = 1
-          downloader.q.process()
-          $(@).html('&#x25a0;')
-        else
-          downloader.q.concurrency = 0
-          $(@).html('&#x25b6;')
+      .addClass("cancel")
+      .click( =>
+        @downloader.q.tasks = []
+        @downloader.failed_downloads = 0
+        @div.hide()
       )
       .html('&#x25a0;')
     @div.append(@queue).append(@failed).append(@success).append(@stopstart)
@@ -29,7 +25,10 @@ class DownloadStatus
     if @downloader.q.length() > 0
       @div.show()
       @queue.text "queued: #{ @downloader.q.length() }"
-      @failed.text "failed: #{ @downloader.failed_downloads }"
+      if @downloader.failed_downloads > 0
+        @failed.text "failed: #{ @downloader.failed_downloads } (DAMN YOU TWITTER API)"
+      else
+        @failed.text "failed: #{ @downloader.failed_downloads }"
       @success.text "success: #{ $(".friend").length }"
     else
       @div.hide()

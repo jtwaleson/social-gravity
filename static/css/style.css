@@ -36,11 +36,14 @@ ul#menu li {
     display: inline-block;
 }
 #menu .download_status span {
-    margin-left: 10px;
+    margin: 0 10px;
     background-color: white;
     border-radius: 4px;
     padding: 4px;
     border: 1px solid black;
+}
+#menu .download_status button.cancel {
+    background-color: red;
 }
 #menu .download_status span.failed {
     color: red;
@@ -49,6 +52,10 @@ ul#menu li {
     color: green;
 }
 #menu .download_status span.queue {
+    padding-left: 30px;
+    background-image: url(../img/loading_small.gif);
+    background-repeat: no-repeat;
+    background-position: 2px 1px;
     color: black;
 }
 
