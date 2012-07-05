@@ -177,7 +177,7 @@ class Simulation
         setTimeout(
           =>
             @gravity_worker.postMessage({continue: yes})
-          100
+          10
         )
 
   randomize_positions: (amount = -1) ->

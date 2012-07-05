@@ -49,21 +49,25 @@ move = (a, b, amount, proportional=no) ->
 
 start = ->
 #    postMessage({console: friends})
+  mutual = 10
+  follower = 4
+  friend = 2
+  move_away = 2
   for idA, friendA of friends
 #    move(friendA, center_x, center_y, 1)
     for idB, friendB of friends when idB > idA
       if idA of friendB.friends and idB of friendA.friends
-        move(friendB, friendA, 10)
-        move(friendA, friendB, 10)
+        move(friendB, friendA, mutual)
+        move(friendA, friendB, mutual)
       else if idB of friendA.friends
-        move(friendA, friendB, 4)
-        move(friendB, friendA, 2)
+        move(friendA, friendB, follower)
+        move(friendB, friendA, friend)
       else if idA of friendB.friends
-        move(friendA, friendB, 2)
-        move(friendB, friendA, 4)
+        move(friendA, friendB, friend)
+        move(friendB, friendA, follower)
 #      else
-      move(friendA, friendB, -2, yes)
-      move(friendB, friendA, -2, yes)
+      move(friendA, friendB, -move_away, yes)
+      move(friendB, friendA, -move_away, yes)
       
   list = for k,i of friends
     {id: i.id, x: i.x, y:i.y}
