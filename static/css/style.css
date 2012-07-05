@@ -27,6 +27,9 @@ ul#menu {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+ul#menu li * {
+    position: relative;
     z-index: 5000;
 }
 ul#menu li {
