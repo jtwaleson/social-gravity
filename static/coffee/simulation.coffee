@@ -253,6 +253,7 @@ class Simulation
     friend.redraw_lines(ctx) for id, friend of @friends
     ctx.strokeStyle = '#000'
     ctx.stroke()
+    update_overlay()
   
   redraw_lines: ->
     for id, friend of @friends

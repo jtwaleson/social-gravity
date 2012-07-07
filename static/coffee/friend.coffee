@@ -14,6 +14,7 @@ class Friend
     @hostage = no
     @pinned = no
     @words = ''
+    @words_list = []
     title = "@#{ data.screen_name }"
     if data.description? and data.description.length > 0
       title += " - #{ data.description }"
