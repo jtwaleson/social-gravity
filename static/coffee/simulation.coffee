@@ -88,8 +88,6 @@ class Simulation
           .attr("placeholder", "name / description")
           .insertAfter(@)
           .focus()
-          .change( ->
-          )
           .keyup( (event) ->
             console.log(event)
             $(".searching").removeClass('searching')
@@ -102,8 +100,6 @@ class Simulation
                 w = if w? then w else ''
                 if w.indexOf(val) >= 0
                   friend.div.addClass('searching')
-          )
-          .blur( ->
           )
     )
     @expand_button = new Button("expand", "Expand", "e",  "", =>
