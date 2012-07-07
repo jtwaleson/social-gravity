@@ -48,7 +48,7 @@ window.update_overlay = ->
           .css('left', i*grid_size)
           .css('top', j*grid_size)
         div.append(info_item)
-        info_item.css('margin-left', info_item.width()/2)
+        info_item.css('margin-left', info_item.width()/-2)
 $ ->
   div = $("<div>")
     .appendTo('body')
