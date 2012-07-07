@@ -49,11 +49,11 @@ $ ->
               max_word = word
               max_word_score = score
         if max_word?
-          div.append(
-            $("<div>")
-              .addClass('info')
-              .text(max_word)
-              .css('left', i*grid_size)
-              .css('top', j*grid_size)
-          )
+          info_item = $("<div>")
+            .addClass('info')
+            .text(max_word)
+            .css('left', i*grid_size)
+            .css('top', j*grid_size)
+          div.append(info_item)
+          info_item.css('margin-left', info_item.width()/2)
   )

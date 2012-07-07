@@ -102,7 +102,7 @@ class Simulation
           )
           .blur( ->
             if $(@).val().length == 0
-              $(@).parent().remove()
+              $(@).remove()
           )
     )
     @expand_button = new Button("expand", "Expand", "e",  "", =>
