@@ -13,7 +13,6 @@ class Zoom
         @draglocation_x = ui.offset.left
         @draglocation_y = ui.offset.top
       stop: (event, ui) =>
-        console.log(ui)
       drag: (event, ui) =>
         dx = @draglocation_x - ui.offset.left
         dy = @draglocation_y - ui.offset.top
@@ -89,7 +88,6 @@ class Simulation
           .insertAfter(@)
           .focus()
           .keyup( (event) ->
-            console.log(event)
             $(".searching").removeClass('searching')
             if event.keyCode == 27
               $(@).remove()
