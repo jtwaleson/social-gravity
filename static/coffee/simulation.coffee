@@ -55,6 +55,7 @@ class Simulation
     @gravity_worker.onmessage = @message_from_gravity_worker
     @words_worker = new Worker 'js/words_worker.js'
     @words_worker.onmessage = @message_from_words_worker
+    @words_worker_ready = yes
     @running = no
     @chaos_key_timeout = -1
     @button = new Button("&#x25b6;", "Start/stop",  "s",  "", =>
@@ -129,6 +130,8 @@ class Simulation
     @redraw()
 
   message_from_words_worker: (event) =>
+    @words_worker_ready = yes
+
     if 'console' of event.data
       console.log(event.data.console)
 
@@ -153,7 +156,8 @@ class Simulation
 #          , (message) ->
 #            alert(message)
 #        )
-      @words_worker.postMessage({friends: event.data.guys})
+      if @words_worker_ready
+        @words_worker.postMessage({friends: event.data.guys})
     else if 'popularity' of event.data
       for id, pop of event.data.popularity
         for n in [0..10]

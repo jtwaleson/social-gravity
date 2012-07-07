@@ -111,11 +111,11 @@ class Friend
     words = {}
     for word in @words
       words[word] = 1
-    for friend in (friends[f] for f,_ of @friends when f of friends)
-      for word in friend.words
-        if word not of words
-          words[word] = 0
-        words[word] += 0.05
+#    for friend in (friends[f] for f,_ of @friends when f of friends)
+#      for word in friend.words
+#        if word not of words
+#          words[word] = 0
+#        words[word] += 0.05
     return words
 
 friends = {}
