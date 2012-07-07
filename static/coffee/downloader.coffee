@@ -66,6 +66,10 @@ class Downloader
           if event.keyCode == 27
             $(@).parent().remove()
         )
+        .blur( ->
+          if $(@).val().length == 0
+            $(@).parent().remove()
+        )
       for o in [
         {name: 'friends', text: 'Friends', default: yes}
         {name: 'self', text: 'Self', default: no}
@@ -80,6 +84,7 @@ class Downloader
           .attr('checked', o.default)
           .attr('type', 'checkbox')
           .appendTo(form)
+      $("<input>").attr('type', 'submit').attr('value', 'Go!').appendTo(form)
     )
 
     try_cache = (task, callback) =>

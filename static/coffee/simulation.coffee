@@ -100,6 +100,10 @@ class Simulation
                 if w.indexOf(val) >= 0
                   friend.div.addClass('searching')
           )
+          .blur( ->
+            if $(@).val().length == 0
+              $(@).parent().remove()
+          )
     )
     @expand_button = new Button("expand", "Expand", "e",  "", =>
       highlighted = (friend for id, friend of @friends when friend.highlight)
