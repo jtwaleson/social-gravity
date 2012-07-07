@@ -91,6 +91,7 @@ class Simulation
           .change( ->
           )
           .keyup( (event) ->
+            console.log(event)
             $(".searching").removeClass('searching')
             if event.keyCode == 27
               $(@).remove()
@@ -103,7 +104,6 @@ class Simulation
                   friend.div.addClass('searching')
           )
           .blur( ->
-            $(@).remove()
           )
     )
     @expand_button = new Button("expand", "Expand", "e",  "", =>
@@ -267,7 +267,7 @@ class Simulation
     @redraw()
   who_is_popular_here: (x,y) =>
     @gravity_worker.postMessage({who_is_popular_here: yes, x: x, y: y, zoom: @zoom.zoom})
-  add_protagonist: (name) =>
+  add_protagonist: (name, load_friends, load_self) =>
     downloader.q.push(
       {name: name}
       (result) =>
@@ -276,10 +276,11 @@ class Simulation
         else if result.result.protected
           alert("This user has a protected account. We can not see his/her friends")
         else
-          #          if result.result.id not of @friends
-          #            friend = new Friend(result.result)
-          for id in result.result.friends.ids.reverse()
-            @add_friend id
+          if load_self and result.result.id not of @friends
+            friend = new Friend(result.result)
+          if load_friends
+            for id in result.result.friends.ids.reverse()
+              @add_friend id
     )
   add_friend: (id) =>
     downloader.q.push(

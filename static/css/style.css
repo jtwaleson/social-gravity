@@ -22,6 +22,9 @@ body {
     border: 0;
     margin: 0;
 }
+ul#menu form {
+    display: inline-block;
+}
 ul#menu {
     position: absolute;
     list-style-type: none;

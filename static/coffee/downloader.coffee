@@ -17,7 +17,7 @@ class DownloadStatus
         @downloader.failed_downloads = 0
         @div.hide()
       )
-      .html('&#x25a0;')
+      .html('stop downloading')
     @div.append(@queue).append(@failed).append(@success).append(@stopstart)
     @update()
 
@@ -43,27 +43,43 @@ class Downloader
     @failed_downloads = 0
     @btn = new Button("@", "Add a new person of interest", "a", "glow", ->
       $(@).removeClass('glow')
+      form = $("<form>")
+        .insertAfter(@)
+        .submit( (event) ->
+          event.preventDefault()
+          v = $(@).find('input[type=text]').val().toLowerCase().replace("@", "")
+          if /[^a-z_0-9]/g.test(v)
+            alert 'Not a valid twitter handle. Use letters, numbers and underscores only.'
+          else
+            load_friends = $(@).find('input[name=friends]').attr('checked')?
+            load_self = $(@).find('input[name=self]').attr('checked')?
+            simulation.add_protagonist(v, load_friends, load_self)
+            $(@).remove()
+        )
       $("<input>")
         .addClass("protagonist_adder")
         .attr("type", "text")
         .attr("placeholder", "@twitter_handle")
-        .insertAfter(@)
+        .appendTo(form)
         .focus()
-        .change( ->
-          v = $(@).val().toLowerCase().replace("@", "")
-          if /[^a-z_0-9]/g.test(v)
-            alert('Not a valid twitter handle. Use letters and underscores only.')
-          else
-            simulation.add_protagonist(v)
-            $(@).remove()
-        )
-        .keyup( (event) ->
+        .keyup( ->
           if event.keyCode == 27
-            $(@).remove()
+            $(@).parent().remove()
         )
-        .blur( ->
-          $(@).remove()
-        )
+      for o in [
+        {name: 'friends', text: 'Friends', default: yes}
+        {name: 'self', text: 'Self', default: no}
+      ]
+        $("<label>")
+          .attr('for', o.name)
+          .text(o.text)
+          .appendTo(form)
+        $("<input>")
+          .attr('name', o.name)
+          .attr('value', '1')
+          .attr('checked', o.default)
+          .attr('type', 'checkbox')
+          .appendTo(form)
     )
 
     try_cache = (task, callback) =>
@@ -205,15 +221,3 @@ class Downloader
     @status = new DownloadStatus(@, @btn.div.parent())
 $ ->
   window.downloader = new Downloader
-
-#        for id in data.friends[0].ids when id not of simulation.friends
-#          do (id) ->
-#            downloader.by_user_id(
-#              id
-#              (data) =>
-#                new Friend(data)
-#              (message) =>
-#                alert(message)
-#            )
-#      (message) =>
-#        alert(message)
