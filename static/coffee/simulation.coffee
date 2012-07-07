@@ -201,9 +201,10 @@ class Simulation
     @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})
     @words_worker.postMessage({new_friend: friend.id, strings: friend.get_strings(), friends: friend.friends})
 
-    for id, f of @friends when f.highlight
-      f.click()
+    if @lastclicked?
+      @lastclicked.click()
     friend.click()
+    @lastclicked = friend
 
   friends_loaded: ->
     for id, friends of @friends

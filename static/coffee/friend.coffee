@@ -28,6 +28,9 @@ class Friend
           .draggable({
             start: (event, ui) =>
               @hostage = yes
+              if not @highlight
+                @click()
+                @temporary_highlight = yes
               event.stopPropagation()
               ui.helper.bind(
                 "click.prevent"
@@ -46,6 +49,9 @@ class Friend
               if not simulation.running
                 simulation.redraw_lines()
             stop: (event, ui) =>
+              if @temporary_highlight? and @temporary_highlight
+                @click()
+              @temporary_highlight = no
               @hostage = no
               event.stopPropagation()
               setTimeout(
