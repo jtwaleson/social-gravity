@@ -137,6 +137,7 @@ class Simulation
 
     if 'words' of event.data
       @friends[event.data.id].words = event.data.words
+      @friends[event.data.id].words_list = event.data.words.split(' ')
     else
       div = $("#words").empty()
       for w in event.data

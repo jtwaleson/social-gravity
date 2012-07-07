@@ -138,3 +138,17 @@ friends = {}
     w = w[0..5]
     f = ({word: i, size: words[i]} for i in w)
     postMessage(f)
+  else if 'overlay' of event.data
+    words = {}
+    for friend in event.data.friends
+      for word, value of friends[friend].get_words()
+        if word not of words
+          words[word] = 0
+        words[word] += value
+    w = (word for word, score of words when score > 1)
+    w.sort( (a,b) =>
+      words[b] - words[a]
+    )
+    w = w[0..5]
+    f = ({word: i, size: words[i]} for i in w)
+    postMessage(f)
