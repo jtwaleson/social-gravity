@@ -56,7 +56,6 @@ $ ->
     .attr('id', 'information_overlay')
 
   button = new Button("Info", "Insight",  "o",  "", ->
-    simulation.stop()
     div.toggle()
     $(@).toggleClass('active')
     
