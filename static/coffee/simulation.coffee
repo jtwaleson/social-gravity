@@ -119,10 +119,15 @@ class Simulation
             ids[id] += 1
 
         if highlighted.length > 1
-          min = parseInt(prompt 'Threshold plz')
-          for id, num of ids
-            if ids[id] < min
-              delete ids[id]
+          min = parseInt(prompt 'Enter the threshold X. We will then load everyone who is followd by at least X of your selected persons.')
+          if isNaN(min) or 1 > min > highlighted.length
+            alert "Not a valid number, has to be larger than 0 and smaller than the number of people you selected (#{ highlighted.length})."
+            return
+          else
+            for id, num of ids
+              if ids[id] < min
+                delete ids[id]
+        downloader.q.tasks = []
         @clear()
         for f in highlighted
           @add_friend(f.id)
@@ -212,8 +217,8 @@ class Simulation
 
     if @lastclicked?
       @lastclicked.click()
-    friend.click()
     @lastclicked = friend
+    friend.click()
 
   friends_loaded: ->
     for id, friends of @friends
@@ -299,7 +304,8 @@ class Simulation
           new Friend(result.result)
     )
   check_expand_button: ->
-    if $(".friend.highlight").length > 0
+    len = $(".friend.highlight").length
+    if len > 1 or (not (@lastclicked?) and len > 0)
       @expand_button.div.show()
     else
       @expand_button.div.hide()

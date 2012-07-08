@@ -213,8 +213,9 @@ class Downloader
     @q.drain = =>
       setTimeout(
         =>
-          for id, friend of simulation.friends when friend.highlight
-            friend.click()
+          if simulation.lastclicked
+            simulation.lastclicked.click()
+          simulation.lastclicked = null
           if @failed_downloads > 0
             alert "Done loading users. However, we failed to load #{ @failed_downloads } friends, probably due to twitter rate limiting. Come back in one hour to load more users."
           @failed_downloads = 0
