@@ -135,7 +135,7 @@ class Simulation
         for id, _ of ids
           @add_friend(id)
     )
-    @expand_button.div.hide()
+    @expand_button.div.parent().hide()
     @box = $("<div>").attr('id', 'box').appendTo("body")
     @redraw()
 
@@ -307,9 +307,9 @@ class Simulation
   check_expand_button: ->
     len = $(".friend.highlight").length
     if len > 1 or (not (@lastclicked?) and len > 0)
-      @expand_button.div.show()
+      @expand_button.div.parent().show()
     else
-      @expand_button.div.hide()
+      @expand_button.div.parent().hide()
 
 class Button
   constructor: (caption, description, keystroke, divclass, func) ->
