@@ -118,7 +118,8 @@ html body .friend.pinned.follows,
 html body .friend.pinned.followed
 {
     opacity: 1 !important;
-    border-width: 2px 10px;
+    border-width: 2px 10px !important;
+    border-color: black !important;
     box-shadow: 0 0 70px black !important;
 }
 .friend.protected {
