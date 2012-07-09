@@ -159,8 +159,13 @@ class Simulation
     if 'popular_guys' of event.data
       div = $("#who_to_follow")
       div.empty()
-      for id in event.data.guys
+      guys = event.data.guys[0..5]
+      for id in guys
         $("<li>").text(@friends[id].name).appendTo(div)
+      if event.data.guys.length > 5
+        $("<li>").text("...").appendTo(div)
+
+
 #      for id, score of event.data.popular_guys
 #        downloader.by_user_id(id, (data) ->
 #            console.log(data.screen_name + " -> " + score)
