@@ -61,6 +61,9 @@ class Simulation
     @button = new Button(1, "&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
     )
+    new Button(2, "&#x2205;", "Clear", "c",  "", =>
+      @clear()
+    )
     new Button(2, "&#x2743;", "Randomize", "r",  "", ->
       if $(".chaosmeter").length > 0
         $(".chaosmeter").width($(".chaosmeter").width() + 10)
@@ -78,10 +81,11 @@ class Simulation
         500
       )
     )
-    new Button(2, "&#x2205;", "Clear", "c",  "", =>
-      @clear()
-    )
     new Button(3, "&#x2222;", "Find users in the field", "f",  "", ->
+      if $(".person-finder").length > 0
+        $(".person-finder").focus()
+        return
+
       $("<input>")
           .addClass("person-finder")
           .attr("type", "text")
