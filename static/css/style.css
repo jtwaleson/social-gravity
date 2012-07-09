@@ -36,6 +36,7 @@ ul#menu li * {
     z-index: 5000;
 }
 ul#menu li {
+    float: left;
     margin: 10px;
 }
 #menu .download_status {
