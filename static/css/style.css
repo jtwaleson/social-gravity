@@ -110,7 +110,13 @@ ul#menu li button#add-protagonist {
     cursor: pointer;
     overflow: hidden;
 }
-html body .friend.pinned {
+html body .friend.pinned,
+html body .friend.pinned.highlight,
+html body .friend.pinned.follows.followed,
+html body .friend.pinned.follows.followed.highlight,
+html body .friend.pinned.follows,
+html body .friend.pinned.followed
+{
     opacity: 1 !important;
     border-width: 2px 10px;
     box-shadow: 0 0 70px black !important;
