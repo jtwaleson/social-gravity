@@ -66,10 +66,6 @@ class Downloader
           if event.keyCode == 27
             $(@).parent().remove()
         )
-        .blur( ->
-          if $(@).val().length == 0
-            $(@).parent().remove()
-        )
       for o in [
         {name: 'friends', text: 'Friends', default: yes}
         {name: 'self', text: 'Self', default: no}
@@ -85,6 +81,21 @@ class Downloader
           .attr('type', 'checkbox')
           .appendTo(form)
       $("<input>").attr('type', 'submit').attr('value', 'Go!').appendTo(form)
+      $(form).find('input').blur( ->
+        a = setTimeout(
+          ->
+            if $(form).find('input[type=text]').val().length == 0
+              $(form).remove()
+          1000
+        )
+        $(@).parent().data('on_form_blur_timeout', a)
+      ).focus(
+        ->
+          a = $(@).parent().data('on_form_blur_timeout')
+          if a?
+            clearTimeout(a)
+          $(@).parent().data('on_form_blur_timeout', null)
+      )
     )
 
     try_cache = (task, callback) =>
