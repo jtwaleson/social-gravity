@@ -102,6 +102,7 @@ class Simulation
           )
           .blur( ->
             if $(@).val().length == 0
+              $(".searching").removeClass('searching')
               $(@).remove()
           )
     )
