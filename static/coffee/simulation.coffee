@@ -90,8 +90,6 @@ class Simulation
           .focus()
           .keyup( (event) ->
             $(".searching").removeClass('searching')
-            if event.keyCode == 27
-              $(@).remove()
             val = $(@).val().toLowerCase()
             if val.length > 0
               for id, friend of simulation.friends
@@ -100,7 +98,13 @@ class Simulation
                 if w.indexOf(val) >= 0
                   friend.div.addClass('searching')
           )
-          .blur( ->
+          .keydown( (event) ->
+            if event.keyCode == 27
+              $(@).remove()
+              $(".searching").removeClass('searching')
+          )
+          .blur( (event) ->
+            console.log(event)
             if $(@).val().length == 0
               $(".searching").removeClass('searching')
               $(@).remove()
