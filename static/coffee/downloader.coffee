@@ -41,7 +41,7 @@ class Downloader
     @no_more_twitter = no
     @no_more_pipes = no
     @failed_downloads = 0
-    @btn = new Button("@", "Add a new person of interest", "a", "glow", ->
+    @btn = new Button(0, "@", "Add a new person of interest", "a", "glow", ->
       $(@).removeClass('glow')
       form = $("<form>")
         .insertAfter(@)
@@ -53,6 +53,7 @@ class Downloader
           else
             load_friends = $(@).find('input[name=friends]').attr('checked')?
             load_self = $(@).find('input[name=self]').attr('checked')?
+            downloader.visual_insert = $(@).find('input[name=visual_insert]').attr('checked')?
             simulation.add_protagonist(v, load_friends, load_self)
             $(@).remove()
         )
@@ -69,16 +70,20 @@ class Downloader
       for o in [
         {name: 'friends', text: 'Friends', default: yes}
         {name: 'self', text: 'Self', default: no}
+        {name: 'visual_insert', text: 'Insert visually (slow)', default: yes}
       ]
-        $("<label>")
-          .attr('for', o.name)
-          .text(o.text)
-          .appendTo(form)
+        id = Math.round(Math.random() * 10000)
+        id = "#{ o.name }_#{ id }"
         $("<input>")
           .attr('name', o.name)
+          .attr('id', id)
           .attr('value', '1')
           .attr('checked', o.default)
           .attr('type', 'checkbox')
+          .appendTo(form)
+        $("<label>")
+          .attr('for', id)
+          .text(o.text)
           .appendTo(form)
       $("<input>").attr('type', 'submit').attr('value', 'Go!').appendTo(form)
       $(form).find('input').blur( ->

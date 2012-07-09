@@ -58,10 +58,10 @@ class Simulation
     @words_worker_ready = yes
     @running = no
     @chaos_key_timeout = -1
-    @button = new Button("&#x25b6;", "Start/stop",  "s",  "", =>
+    @button = new Button(1, "&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
     )
-    new Button("&#x2743;", "Randomize", "r",  "", ->
+    new Button(2, "&#x2743;", "Randomize", "r",  "", ->
       if $(".chaosmeter").length > 0
         $(".chaosmeter").width($(".chaosmeter").width() + 10)
       else
@@ -78,10 +78,10 @@ class Simulation
         500
       )
     )
-    new Button("&#x2205;", "Clear", "c",  "", =>
+    new Button(2, "&#x2205;", "Clear", "c",  "", =>
       @clear()
     )
-    new Button("&#x2222;", "Find users in the field", "f",  "", ->
+    new Button(3, "&#x2222;", "Find users in the field", "f",  "", ->
       $("<input>")
           .addClass("person-finder")
           .attr("type", "text")
@@ -106,7 +106,7 @@ class Simulation
               $(@).remove()
           )
     )
-    @expand_button = new Button("expand", "Expand", "e",  "", =>
+    @expand_button = new Button(5, "expand", "Expand", "e",  "", =>
       highlighted = (friend for id, friend of @friends when friend.highlight)
 
       if highlighted.length == 0
@@ -221,10 +221,13 @@ class Simulation
     @gravity_worker.postMessage({new_friend: friend.id, x: friend.x, y: friend.y, friends: friend.friends})
     @words_worker.postMessage({new_friend: friend.id, strings: friend.get_strings(), friends: friend.friends})
 
-    if @lastclicked?
-      @lastclicked.click()
-    @lastclicked = friend
-    friend.click()
+    if downloader.visual_insert
+      if @lastclicked?
+        @lastclicked.click()
+      @lastclicked = friend
+      friend.click()
+    else
+      friend.redraw()
 
   friends_loaded: ->
     for id, friends of @friends
@@ -317,7 +320,7 @@ class Simulation
       @expand_button.div.parent().hide()
 
 class Button
-  constructor: (caption, description, keystroke, divclass, func) ->
+  constructor: (li_number, caption, description, keystroke, divclass, func) ->
     @div = $("<button>")
               .html(caption)
               .addClass(divclass)
@@ -331,9 +334,8 @@ class Button
               )
 
                           
-    li = $("<li>")
+    li = $("ul#menu li#li_#{li_number}")
     li.append(@div)
-    li.appendTo $("#menu")
     shortcut.add(
       keystroke
       =>
@@ -344,6 +346,8 @@ class Button
 window.Button = Button
 
 $ ->
+  for i in [0..6]
+    $("<li>").attr('id', "li_#{ i }").appendTo($("#menu"))
   window.simulation = new Simulation
   $('body').mousewheel( (e, delta) ->
     simulation.zoom.do_zoom(e.originalEvent.wheelDelta, e.originalEvent.pageX, e.originalEvent.pageY)

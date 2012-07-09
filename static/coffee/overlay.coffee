@@ -55,7 +55,7 @@ $ ->
     .hide()
     .attr('id', 'information_overlay')
 
-  button = new Button("Info", "Insight",  "o",  "", ->
+  button = new Button(3, "Info", "Insight",  "o",  "", ->
     div.toggle()
     $(@).toggleClass('active')
     
