@@ -71,7 +71,7 @@ class Downloader
         .attr("placeholder", "@twitter_handle")
         .appendTo(form)
         .focus()
-        .keyup( ->
+        .keyup( (event) ->
           if event.keyCode == 27
             $(@).parent().remove()
         )
