@@ -155,6 +155,7 @@ class Simulation
 
   set_up_hashchange: ->
     $(window).bind('hashchange', (event) =>
+      event.preventDefault()
       h = window.location.hash
       parts = {}
       for o in ({key: a[0].replace('#', ''), value: a[1]} for a in (part.split("=") for part in h.split("&")))
