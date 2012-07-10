@@ -80,6 +80,8 @@ randomize = (friend) ->
 @onmessage = (event) ->
   if 'new_friend' of event.data
     friends[event.data.new_friend] = {x: event.data.x, y: event.data.y, id: event.data.new_friend, friends: event.data.friends}
+    if event.data.new_friend not of number_of_followers
+      number_of_followers[event.data.new_friend] = 1
     for id, _ of event.data.friends
       if id not of number_of_followers
         number_of_followers[id] = 0
