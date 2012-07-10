@@ -57,6 +57,7 @@ class Simulation
     @words_worker.onmessage = @message_from_words_worker
     @words_worker_ready = yes
     @running = no
+    @set_up_hashchange()
     @chaos_key_timeout = -1
     @button = new Button(1, "&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
@@ -146,6 +147,38 @@ class Simulation
     @expand_button.div.parent().hide()
     @box = $("<div>").attr('id', 'box').appendTo("body")
     @redraw()
+    setTimeout(
+      ->
+        $(window).trigger('hashchange')
+      500
+    )
+
+  set_up_hashchange: ->
+    $(window).bind('hashchange', (event) =>
+      h = window.location.hash
+      parts = {}
+      for o in ({key: a[0].replace('#', ''), value: a[1]} for a in (part.split("=") for part in h.split("&")))
+        parts[o.key] = o.value
+      @clear(no)
+      if downloader?
+        downloader.visual_insert = no
+      if parts.friends? and parts.friends.length > 0
+        friends = parts.friends.split(',')
+        for id in friends
+          @add_friend(id)
+    )
+#        if url != ''
+#
+#_gaq.push(['_trackPageview',url]);
+#$("#content_upper").empty();
+#$("#preview").remove();
+#$("#ajax_loading").show();
+#$("#layout_inner").fadeTo('fast','0.3',function() {
+#paginationthispage = 1;
+#$('<div class="content_wrapper"></div>').appendTo("#content_upper").load(url,function(){style()});
+#}); 
+#}   
+#}); 
 
   message_from_words_worker: (event) =>
     @words_worker_ready = yes
@@ -161,6 +194,17 @@ class Simulation
       for w in event.data
         $("<li>").text(w.word).appendTo(div)
 
+  hash_change: ->
+    f = {}
+    for id, _ of downloader.to_load
+      f[id] = 1
+    for id, _ of @friends
+      f[id] = 1
+    f = (id for id, _ of f)
+    friends = "friends=#{f.join(",")}"
+    zoom = "zoom=#{@zoom.zoom},#{@zoom.x},#{@zoom.y}"
+    hash = [zoom, friends].join("&")
+    window.location.hash = "##{ hash }"
   message_from_gravity_worker: (event) =>
     if 'console' of event.data
       console.log(event.data.console)
@@ -208,13 +252,15 @@ class Simulation
       @gravity_worker.postMessage({id: friend.id, new_x: friend.x, new_y: friend.y})
     @redraw()
 
-  clear: ->
+  clear: (trigger_hash = yes) ->
     @stop()
     @gravity_worker.postMessage({'clear': yes})
     for id, friend of @friends
       friend.div.remove()
     @friends = {}
     @redraw()
+    if trigger_hash
+      @hash_change()
 
   take_hostage: (f) ->
     @gravity_worker.postMessage({id: f.id, force_x: f.x, force_y: f.y})
@@ -294,6 +340,7 @@ class Simulation
     @redraw()
   who_is_popular_here: (x,y) =>
     @gravity_worker.postMessage({who_is_popular_here: yes, x: x, y: y, zoom: @zoom.zoom})
+
   add_protagonist: (name, load_friends, load_self) =>
     downloader.q.push(
       {name: name}
@@ -308,8 +355,10 @@ class Simulation
           if load_friends
             for id in result.result.friends.ids.reverse()
               @add_friend id
+          @hash_change()
     )
   add_friend: (id) =>
+    downloader.to_load[id] = 1
     downloader.q.push(
       {id: id}
       (result) =>

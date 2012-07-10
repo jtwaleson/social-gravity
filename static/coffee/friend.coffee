@@ -6,6 +6,7 @@ class Friend
       for id in data.friends.ids
         @friends[id] = 1
     @id = data.id
+    delete downloader.to_load[@id]
     @highlight = no
     @lines_to = []
     @protected = data.protected

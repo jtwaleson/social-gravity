@@ -19,6 +19,8 @@ class DownloadStatus
       .addClass("cancel")
       .click( =>
         @downloader.q.tasks = []
+        @downloader.to_load = {}
+        simulation.hash_change()
         @downloader.failed_downloads = 0
         @div.hide()
       )
@@ -46,6 +48,7 @@ class Downloader
     @no_more_twitter = no
     @no_more_pipes = no
     @failed_downloads = 0
+    @to_load = {}
     @btn = new Button(0, "@", "Add a new person and/or his/her friends", "a", "glow", ->
       $(@).removeClass('glow')
       form = $("<form>")
