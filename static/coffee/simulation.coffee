@@ -64,7 +64,7 @@ class Simulation
     new Button(2, "&#x2205;", "Clear", "c",  "", =>
       @clear()
     )
-    new Button(2, "&#x2743;", "Randomize", "r",  "", ->
+    new Button(2, "&#x2743;", "Randomize, repeat ", "r",  "", ->
       if $(".chaosmeter").length > 0
         $(".chaosmeter").width($(".chaosmeter").width() + 10)
       else
@@ -81,7 +81,7 @@ class Simulation
         500
       )
     )
-    new Button(3, "&#x2222;", "Find users in the field", "f",  "", ->
+    new Button(3, "&#x2222;", "Find loaded users", "f",  "", ->
       if $(".person-finder").length > 0
         $(".person-finder").focus()
         return
@@ -169,7 +169,7 @@ class Simulation
       div.empty()
       guys = event.data.guys[0..5]
       for id in guys
-        $("<li>").text(@friends[id].name).appendTo(div)
+        $("<li>").text("@#{ @friends[id].name }").appendTo(div)
       if event.data.guys.length > 5
         $("<li>").text("...").appendTo(div)
 

@@ -35,7 +35,7 @@ class Spyglass
     
 $ ->
   spyglass = new Spyglass
-  new Button(3, "&#x22B9;", "Find new interesting people in an area", "i", "", ->
+  new Button(3, "&#x22B9;", "Insight eye: Find which keywords are used in an area", "i", "", ->
     spyglass.overlay.toggle()
     $(@).toggleClass("active")
   )

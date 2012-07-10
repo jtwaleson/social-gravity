@@ -1,5 +1,6 @@
 div,
 body {
+    font-family: Courier;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -300,6 +301,9 @@ input.protagonist_adder {
     height: 100%;
     background-color: rgba(0,0,0,0.5);
 }
+#help_overlay {
+    overflow: auto;
+}
 #information_overlay .info {
     position: absolute;
     height: 20px;
@@ -309,6 +313,11 @@ input.protagonist_adder {
     border: 1px solid black;
     border-radius: 3px;
     font-weight: bold;
+}
+.help_text {
+    width: 800px;
+    margin: 0 auto;
+    color: white;
 }
 html body .friend.searching,
 body .friend.highlight.searching,

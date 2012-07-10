@@ -10,6 +10,11 @@ class DownloadStatus
     @queue = $("<span>").addClass('queue')
     @failed = $("<span>").addClass('failed')
     @success = $("<span>").addClass('success')
+    @visual_insertion = $("<button>")
+      .click( =>
+        downloader.visual_insert = not downloader.visual_insert
+      )
+      .html('toggle insert tracer')
     @stopstart = $("<button>")
       .addClass("cancel")
       .click( =>
@@ -18,7 +23,7 @@ class DownloadStatus
         @div.hide()
       )
       .html('stop downloading')
-    @div.append(@queue).append(@failed).append(@success).append(@stopstart)
+    @div.append(@queue).append(@failed).append(@success).append(@visual_insertion).append(@stopstart)
     @update()
 
   update: ->
@@ -41,7 +46,7 @@ class Downloader
     @no_more_twitter = no
     @no_more_pipes = no
     @failed_downloads = 0
-    @btn = new Button(0, "@", "Add a new person of interest", "a", "glow", ->
+    @btn = new Button(0, "@", "Add a new person and/or his/her friends", "a", "glow", ->
       $(@).removeClass('glow')
       form = $("<form>")
         .insertAfter(@)
@@ -70,7 +75,7 @@ class Downloader
       for o in [
         {name: 'friends', text: 'Friends', default: yes}
         {name: 'self', text: 'Self', default: no}
-        {name: 'visual_insert', text: 'Insert visually (slow)', default: yes}
+        {name: 'visual_insert', text: 'Insert tracer (cool but slow)', default: yes}
       ]
         id = Math.round(Math.random() * 10000)
         id = "#{ o.name }_#{ id }"
