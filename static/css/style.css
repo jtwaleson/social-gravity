@@ -303,6 +303,20 @@ input.protagonist_adder {
 }
 #help_overlay {
     overflow: auto;
+    text-shadow: black 2px 2px 1px;
+}
+#help_overlay a {
+    text-shadow: none;
+    color: white;
+}
+#help_overlay p,
+#help_overlay li {
+    -webkit-touch-callout: text !important;
+    -webkit-user-select: text !important;
+    -khtml-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
 }
 #information_overlay .info {
     position: absolute;
