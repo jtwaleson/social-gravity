@@ -23,6 +23,9 @@ body {
     border: 0;
     margin: 0;
 }
+ul#menu input[type=text] {
+    color: black;
+}
 ul#menu form {
     display: inline-block;
 }
@@ -32,18 +35,24 @@ ul#menu {
     margin: 0;
     padding: 0;
 }
+ul#menu li div {
+    
+}
 ul#menu li * {
     position: relative;
     z-index: 5000;
+    margin-right: 10px;
 }
+
 ul#menu li {
     margin: 10px;
+    width: 2000px;
 }
 #menu .download_status {
-    display: inline-block;
+    display: inline;
 }
 #menu .download_status span {
-    margin: 0 10px;
+    margin-right: 10px;
     background-color: white;
     border-radius: 4px;
     padding: 4px;

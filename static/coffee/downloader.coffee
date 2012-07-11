@@ -4,7 +4,7 @@ class DownloadStatus
     @downloader = downloader
     @div = $("<div>")
       .addClass('download_status')
-      .hide()
+      .css('display', 'none')
       .appendTo(container)
     @failed_count = 0
     @queue = $("<span>").addClass('queue')
@@ -21,7 +21,7 @@ class DownloadStatus
         @downloader.q.tasks = []
         @downloader.to_load = {}
         @downloader.failed_downloads = 0
-        @div.hide()
+        @div.css('display', 'none')
       )
       .html('stop downloading')
     @div.append(@queue).append(@failed).append(@success).append(@visual_insertion).append(@stopstart)
@@ -29,7 +29,7 @@ class DownloadStatus
 
   update: ->
     if @downloader.q.length() > 0
-      @div.show()
+      @div.css('display', 'inline')
       @queue.text "queued: #{ @downloader.q.length() }"
       if @downloader.failed_downloads > 0
         @failed.text "failed: #{ @downloader.failed_downloads } (DAMN YOU TWITTER API)"
@@ -37,7 +37,7 @@ class DownloadStatus
         @failed.text "failed: #{ @downloader.failed_downloads }"
       @success.text "success: #{ $(".friend").length }"
     else
-      @div.hide()
+      @div.css('display', 'none')
 
 
 
