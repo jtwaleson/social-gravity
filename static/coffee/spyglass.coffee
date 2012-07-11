@@ -6,20 +6,22 @@ class Spyglass
       .attr("id", "spyglass_overlay")
       .hide()
       .appendTo("body")
-      .mousemove((event) =>
-        dx = @last_x - event.pageX
-        dy = @last_y - event.pageY
-        @glow.css('left', event.pageX)
-        @glow.css('top', event.pageY)
-        d = Math.sqrt(dx*dx + dy*dy)
-        if d > 25
-          @last_x = event.pageX
-          @last_y = event.pageY
-          simulation.who_is_popular_here(simulation.zoom.translate_x_back(event.pageX),simulation.zoom.translate_y_back(event.pageY))
-      )
     @glow = $("<div>")
       .attr("id", "spyglass_glow")
       .appendTo(@overlay)
+      .draggable({
+        drag: (e, ui) =>
+          event = e.originalEvent
+          dx = @last_x - event.pageX
+          dy = @last_y - event.pageY
+          @glow.css('left', event.pageX)
+          @glow.css('top', event.pageY)
+          d = Math.sqrt(dx*dx + dy*dy)
+          if d > 25
+            @last_x = event.pageX
+            @last_y = event.pageY
+            simulation.who_is_popular_here(simulation.zoom.translate_x_back(event.pageX),simulation.zoom.translate_y_back(event.pageY))
+      })
     @who_to_follow_wrapper = $("<div>")
       .attr("id", "who_to_follow_wrapper")
       .appendTo(@glow)
@@ -38,4 +40,7 @@ $ ->
   new Button(3, "&#x22B9;", "Insight eye: Find which keywords are used in an area", "i", "", ->
     spyglass.overlay.toggle()
     $(@).toggleClass("active")
+    if $(@).is('.active')
+      spyglass.glow.css('left', $("body").width()/2)
+      spyglass.glow.css('top', $("body").height()/2)
   )
