@@ -142,15 +142,12 @@ randomize = (friend) ->
           popular_guys[id] = 0
         popular_guys[id] += max_distance*max_distance - friend.distance
 
-    popu = (id for id, f of popular_guys)
+    popu = ({id: id, score: f} for id, f of popular_guys)
     popu.sort( (a,b) ->
-      popular_guys[b] - popular_guys[a]
+      b.score - a.score
     )
-    popu = popu[0..5]
-    popu2 = {}
-    for id in popu
-      popu2[id] = popular_guys[id]
+    popu = popu[0..50]
 
     guys = (f.id for f in guys)
-    postMessage({guys: guys, popular_guys: popu2})
+    postMessage({guys: guys, popular_guys: popu})
       

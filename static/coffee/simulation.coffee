@@ -17,6 +17,7 @@ class Zoom
         dx = @draglocation_x - ui.offset.left
         dy = @draglocation_y - ui.offset.top
         if Math.abs(dx) + Math.abs(dy) > 20
+          spyglass.clear()
           @x += dx*@zoom
           @y += dy*@zoom
           simulation.redraw()
@@ -110,7 +111,6 @@ class Simulation
               $(".searching").removeClass('searching')
           )
           .blur( (event) ->
-            console.log(event)
             if $(@).val().length == 0
               $(".searching").removeClass('searching')
               $(@).remove()
@@ -203,7 +203,7 @@ class Simulation
     if 'console' of event.data
       console.log(event.data.console)
     if 'popular_guys' of event.data
-      div = $("#who_to_follow")
+      div = $("#who_is_here")
       div.empty()
       guys = event.data.guys[0..4]
       for id in guys
@@ -211,13 +211,7 @@ class Simulation
       if event.data.guys.length > 5
         $("<li>").text("...").appendTo(div)
 
-
-#      for id, score of event.data.popular_guys
-#        downloader.by_user_id(id, (data) ->
-#            console.log(data.screen_name + " -> " + score)
-#          , (message) ->
-#            alert(message)
-#        )
+      $("#who_to_follow").data('who_to_follow', event.data.popular_guys)
       if @words_worker_ready
         @words_worker.postMessage({friends: event.data.guys})
     else if 'popularity' of event.data

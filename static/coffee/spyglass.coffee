@@ -9,6 +9,7 @@ class Spyglass
     @glow = $("<div>")
       .attr("id", "spyglass_glow")
       .appendTo(@overlay)
+      .html('<br/><br/>drag')
       .draggable({
         drag: (e, ui) =>
           event = e.originalEvent
@@ -21,28 +22,76 @@ class Spyglass
             @last_x = event.pageX
             @last_y = event.pageY
             simulation.who_is_popular_here(simulation.zoom.translate_x_back(event.pageX),simulation.zoom.translate_y_back(event.pageY))
+        start: (e, ui) =>
+          @who_to_follow_ul.empty()
+        stop: (e, ui) =>
+          li = $("<li>")
+            .addClass('btn')
+          btn = $("<button>")
+            .text("Follow suggestions?")
+            .appendTo(li)
+            .data('start_at', 0)
+            .click( (event) ->
+              ul = $(@).closest('ul')
+              people = ul.data('who_to_follow')
+              downloader.q.tasks = (item for item in downloader.q.tasks when not item.spyglass?)
+              ul.find('li.follow_suggestion').remove()
+              start_at = $(@).data('start_at')
+              $(@).data('start_at', start_at+5)
+              $(@).text('More...')
+              if start_at + 5 > people.length
+                $(@).remove()
+              for user in people[start_at..start_at+4]
+                do (user) ->
+                  ul.find('li.btn').before(
+                    $("<li>")
+                      .text("?")
+                      .attr('id', "you_should_follow_#{ user.id }")
+                      .addClass('follow_suggestion')
+                  )
+                  downloader.q.push(
+                    {id: user.id}
+                    (result) ->
+                      if result.error?
+                        $("#you_should_follow_#{ user.id }").text('DAMN YOU TWITTER API')
+                      else
+                        result = result.result
+                        $("#you_should_follow_#{ user.id }")
+                          .empty()
+                          .append(
+                            $("<div>")
+                              .addClass('follow_suggestion')
+                              .html("<a target='_blank' href='https://twitter.com/#{ result.screen_name }'>@#{ result.screen_name }</a> - #{ result.description }")
+                          )
+                          .append($("<button>").text('+').addClass('add_to_field').click( ->
+                            simulation.add_friend(user.id)
+                          ))
+                  )
+            )
+          @who_to_follow_ul.append(li)
+          
       })
-    @who_to_follow_wrapper = $("<div>")
-      .attr("id", "who_to_follow_wrapper")
-      .appendTo(@glow)
-    @words_wrapper = $("<div>")
-      .attr("id", "words_wrapper")
-      .appendTo(@glow)
     @words = $("<ul>")
       .attr("id", "words")
-      .appendTo(@words_wrapper)
+      .appendTo(@glow)
+    @who_is_here_ul = $("<ul>")
+      .attr("id", "who_is_here")
+      .appendTo(@glow)
     @who_to_follow_ul = $("<ul>")
       .attr("id", "who_to_follow")
-      .appendTo(@who_to_follow_wrapper)
+      .appendTo(@glow)
+  clear: ->
+    @who_is_here_ul.empty()
+    @words.empty()
+    @who_to_follow_ul.empty()
   reset: ->
     @glow.css('left', $("body").width()/2)
     @glow.css('top', $("body").height()/2)
-    @who_to_follow_ul.empty()
-    @words.empty()
+    @clear()
     
     
 $ ->
-  spyglass = new Spyglass
+  window.spyglass = new Spyglass
   new Button(3, "&#x22B9;", "Insight eye: Find which keywords are used in an area", "i", "", ->
     spyglass.overlay.toggle()
     $(@).toggleClass("active")
