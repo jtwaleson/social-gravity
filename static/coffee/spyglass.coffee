@@ -34,6 +34,12 @@ class Spyglass
     @who_to_follow_ul = $("<ul>")
       .attr("id", "who_to_follow")
       .appendTo(@who_to_follow_wrapper)
+  reset: ->
+    @glow.css('left', $("body").width()/2)
+    @glow.css('top', $("body").height()/2)
+    @who_to_follow_ul.empty()
+    @words.empty()
+    
     
 $ ->
   spyglass = new Spyglass
@@ -41,6 +47,5 @@ $ ->
     spyglass.overlay.toggle()
     $(@).toggleClass("active")
     if $(@).is('.active')
-      spyglass.glow.css('left', $("body").width()/2)
-      spyglass.glow.css('top', $("body").height()/2)
+      spyglass.reset()
   )
