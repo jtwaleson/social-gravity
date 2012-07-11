@@ -59,6 +59,7 @@ class Simulation
     @running = no
     @set_up_hashchange()
     @chaos_key_timeout = -1
+    @he_i_triggered_the_hash_change = no
     @button = new Button(1, "&#x25b6;", "Start/stop",  "s",  "", =>
       @toggle()
     )
@@ -156,6 +157,9 @@ class Simulation
   set_up_hashchange: ->
     $(window).bind('hashchange', (event) =>
       event.preventDefault()
+      if @he_i_triggered_the_hash_change
+        @he_i_triggered_the_hash_change = no
+        return
       h = window.location.hash
       parts = {}
       for o in ({key: a[0].replace('#', ''), value: a[1]} for a in (part.split("=") for part in h.split("&")))
@@ -205,6 +209,7 @@ class Simulation
     friends = "friends=#{f.join(",")}"
     zoom = "zoom=#{@zoom.zoom},#{@zoom.x},#{@zoom.y}"
     hash = [zoom, friends].join("&")
+    @he_i_triggered_the_hash_change = yes
     window.location.hash = "##{ hash }"
   message_from_gravity_worker: (event) =>
     if 'console' of event.data

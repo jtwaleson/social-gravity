@@ -20,7 +20,6 @@ class DownloadStatus
       .click( =>
         @downloader.q.tasks = []
         @downloader.to_load = {}
-        simulation.hash_change()
         @downloader.failed_downloads = 0
         @div.hide()
       )
