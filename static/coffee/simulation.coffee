@@ -172,18 +172,6 @@ class Simulation
         for id in friends
           @add_friend(id)
     )
-#        if url != ''
-#
-#_gaq.push(['_trackPageview',url]);
-#$("#content_upper").empty();
-#$("#preview").remove();
-#$("#ajax_loading").show();
-#$("#layout_inner").fadeTo('fast','0.3',function() {
-#paginationthispage = 1;
-#$('<div class="content_wrapper"></div>').appendTo("#content_upper").load(url,function(){style()});
-#}); 
-#}   
-#}); 
 
   message_from_words_worker: (event) =>
     @words_worker_ready = yes
@@ -217,7 +205,7 @@ class Simulation
     if 'popular_guys' of event.data
       div = $("#who_to_follow")
       div.empty()
-      guys = event.data.guys[0..5]
+      guys = event.data.guys[0..4]
       for id in guys
         $("<li>").text("@#{ @friends[id].name }").appendTo(div)
       if event.data.guys.length > 5
