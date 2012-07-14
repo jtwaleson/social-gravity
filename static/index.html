@@ -2,25 +2,31 @@
 <html>
     <head>
         <title>Social Gravity - a sandbox for your social network</title>
-        <script type='text/javascript' src='js/external/jquery.min.js'></script>
-        <script type='text/javascript' src='js/external/jquery-ui-1.8.2.custom.min.js'></script>
-        <script type='text/javascript' src='js/external/jquery.mousewheel.min.js'></script>
-        <script type='text/javascript' src='js/external/async.js'></script>
-        <script type='text/javascript' src='js/external/shortcut.js'></script>
-        <script type='text/javascript' src='js/simulation.js'></script>
-        <script type='text/javascript' src='js/downloader.js'></script>
-        <script type='text/javascript' src='js/friend.js'></script>
-        <script type='text/javascript' src='js/spyglass.js'></script>
-        <script type='text/javascript' src='js/overlay.js'></script>
-        <script type='text/javascript' src='js/help.js'></script>
-        <script type="text/javascript" src="https://sprintr.home.mendix.com/feedback/sprintrfeedback.js"></script>
-        <script type="text/javascript">
-            window.sprintrFeedback.create({'sprintrid' : '8b7f7805-7983-4e6d-b64b-a8c76a5f6c86',  allowFile : true, userdata : {
-                'username' : 'Anonymous',
-                'emailaddress' : '',
-                'userroles' : '',
-                'formName' : ''
-            }});
+
+        <script type='text/javascript'>
+            if (typeof(Worker)==="undefined") {
+                alert("Sorry, your browser does not support HTML5. Web Workers. Please use Social Gravity on one of these browsers: http://caniuse.com/webworkers");
+            } else {
+                var headID = document.getElementsByTagName("head")[0];
+                var newScript = document.createElement('script');
+                newScript.type = 'text/javascript';
+                newScript.src = 'js/concat.js';
+                headID.appendChild(newScript);
+            }
+            var headID = document.getElementsByTagName("head")[0];
+            var newScript = document.createElement('script');
+            newScript.type = 'text/javascript';
+            newScript.src = 'https://sprintr.home.mendix.com/feedback/sprintrfeedback.js';
+            newScript.onload = function() {
+                window.sprintrFeedback.create({'sprintrid' : '8b7f7805-7983-4e6d-b64b-a8c76a5f6c86',  allowFile : true, userdata : {
+                    'username' : 'Anonymous',
+                    'emailaddress' : '',
+                    'userroles' : '',
+                    'formName' : ''
+                }});
+            }
+            headID.appendChild(newScript);
+            
         </script>
         <link rel="stylesheet" href="css/style.css">
         <link rel="stylesheet" href="css/fugly.css">
@@ -33,6 +39,9 @@
             <div class='help_text'>
                 <h1>Social Gravity</h1>
                 <p>Social Gravity is a new way to analyze social networks on twitter. I'm sure it could be useful for marketeers and egomaniacs, but more importantly: it's magical.</p>
+                <o>See for yourself:</p>
+
+                <h3>Details</>
                 <p>If you've read this far, you should follow me on twitter ;) <a target='_blank' href='http://twitter.com/jtwaleson'>@jtwaleson</a>. After all, I made all this, and it works with twitter. Seriously though, don't do it.</p>
                 <h3>How do I ....</h3>
                 <p>Click the @ button. Enter a twitter account that is not protected, like @jtwaleson. Leave the settings to default, press Go!</p>
@@ -53,6 +62,8 @@
                     <li>Web workers, for relatively smooth UI despite the heavy lifting</li>
                     <li>Javascript/coffeescript/node.js for doing everything</li>
                     <li>MongoDB for being a database</li>
+                    <li>JQuery</lI>
+                    <li>Caolan McMahon for creating async.js. I use the queue for downloading all the data from Twitter/Cache</li>
                     <li><a href='http://cloudflare.com'>Cloud Flare</a> for caching (Thanks for the bandwidth guys!).</li>
                     <li><a href='http://linode.com'>Linode</a> for great hosting.</li>
                     <li>Twitter for building the infrastructure to make this possible, although they are doing a lot of things wrong.</li>
