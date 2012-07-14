@@ -5,7 +5,9 @@
 
         <script type='text/javascript'>
             if (typeof(Worker)==="undefined") {
-                alert("Sorry, your browser does not support HTML5. Web Workers. Please use Social Gravity on one of these browsers: http://caniuse.com/webworkers");
+                if (confirm("Sorry, your browser does not support HTML5 Web Workers. Would you like to see the video instead?")) {
+                    window.location = 'http://youtu.be/pyVUMTVarpQ';
+                }
             } else {
                 var headID = document.getElementsByTagName("head")[0];
                 var newScript = document.createElement('script');
@@ -39,9 +41,9 @@
             <div class='help_text'>
                 <h1>Social Gravity</h1>
                 <p>Social Gravity is a new way to analyze social networks on twitter. I'm sure it could be useful for marketeers and egomaniacs, but more importantly: it's magical.</p>
-                <o>See for yourself:</p>
-
-                <h3>Details</>
+                <p>See for yourself:</p>
+                <iframe width="420" height="315" src="http://www.youtube.com/embed/pyVUMTVarpQ" frameborder="0" allowfullscreen></iframe>
+                <h3>Details</h3>
                 <p>If you've read this far, you should follow me on twitter ;) <a target='_blank' href='http://twitter.com/jtwaleson'>@jtwaleson</a>. After all, I made all this, and it works with twitter. Seriously though, don't do it.</p>
                 <h3>How do I ....</h3>
                 <p>Click the @ button. Enter a twitter account that is not protected, like @jtwaleson. Leave the settings to default, press Go!</p>
@@ -60,14 +62,13 @@
                 <p>I'd like to thank:</p>
                 <ul>
                     <li>Web workers, for relatively smooth UI despite the heavy lifting</li>
-                    <li>Javascript/coffeescript/node.js for doing everything</li>
-                    <li>MongoDB for being a database</li>
-                    <li>JQuery</lI>
-                    <li>Caolan McMahon for creating async.js. I use the queue for downloading all the data from Twitter/Cache</li>
+                    <li>Javascript/jQuery/coffeescript/node.js for doing everything</li>
+                    <li><a href='http://mongodb.org/'>MongoDB</a> for being a database</li>
+                    <li>Caolan McMahon for creating <a href='https://github.com/caolan/async/'>async.js</a>. I use the queue for downloading all the data from Twitter/Cache</li>
                     <li><a href='http://cloudflare.com'>Cloud Flare</a> for caching (Thanks for the bandwidth guys!).</li>
                     <li><a href='http://linode.com'>Linode</a> for great hosting.</li>
-                    <li>Twitter for building the infrastructure to make this possible, although they are doing a lot of things wrong.</li>
-                    <li>My wife for not leaving my despite my a-social single-minded mind while working on this and countless other projects.</li>
+                    <li>Twitter for building the infrastructure to make this possible, although they are doing a lot of things wrong with the API.</li>
+                    <li>My wife for not leaving my despite my a-social single-minded mind while working on this and countless other projects ;)</li>
                 </ul>
                 
             </div>
