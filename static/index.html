@@ -2,19 +2,33 @@
 <html>
     <head>
         <title>Social Gravity - a sandbox for your social network</title>
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-4700574-8']);
+            _gaq.push(['_trackPageview']);
+
+            (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
 
         <script type='text/javascript'>
-            if (typeof(Worker)==="undefined") {
-                if (confirm("Sorry, your browser does not support HTML5 Web Workers. Try a recent version of Chrome, Firefox, Opera or Safari instead. Would you like to see a video of how it works?")) {
-                    window.location = 'http://youtu.be/pyVUMTVarpQ';
-                }
-            } else {
-                var headID = document.getElementsByTagName("head")[0];
-                var newScript = document.createElement('script');
-                newScript.type = 'text/javascript';
-                newScript.src = 'js/concat.js';
-                headID.appendChild(newScript);
-            }
+            setTimeout( function() {
+                    if (typeof(Worker)==="undefined") {
+                        if (confirm("Sorry, your browser does not support HTML5 Web Workers. Try a recent version of Chrome, Firefox, Opera or Safari instead. Would you like to see a video of how it works?")) {
+                            window.location = 'http://youtu.be/pyVUMTVarpQ';
+                        }
+
+                    } else {
+                        var headID = document.getElementsByTagName("head")[0];
+                        var newScript = document.createElement('script');
+                        newScript.type = 'text/javascript';
+                        newScript.src = 'js/concat.js';
+                        headID.appendChild(newScript);
+                    }
+                }, 100);
             var headID = document.getElementsByTagName("head")[0];
             var newScript = document.createElement('script');
             newScript.type = 'text/javascript';
@@ -30,19 +44,8 @@
             headID.appendChild(newScript);
             
         </script>
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/fugly.css">
-        <script type="text/javascript">
-            var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', 'UA-4700574-8']);
-            _gaq.push(['_trackPageview']);
-
-            (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-            })();
-        </script>
     </head>
     <body>
         <ul id='menu'>
