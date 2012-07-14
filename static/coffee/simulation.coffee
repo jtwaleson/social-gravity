@@ -242,6 +242,9 @@ class Simulation
 
   clear: (trigger_hash = yes) ->
     @stop()
+    @zoom.zoom = 1
+    @zoom.x = 0
+    @zoom.y = 0
     @gravity_worker.postMessage({'clear': yes})
     for id, friend of @friends
       friend.div.remove()
