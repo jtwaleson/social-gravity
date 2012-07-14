@@ -39,8 +39,6 @@ class DownloadStatus
     else
       @div.css('display', 'none')
 
-
-
 class Downloader
   constructor: ->
     @no_more_twitter_count = 0
